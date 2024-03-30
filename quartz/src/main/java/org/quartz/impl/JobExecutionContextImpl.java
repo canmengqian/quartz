@@ -45,32 +45,46 @@ public class JobExecutionContextImpl implements java.io.Serializable, JobExecuti
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
+    // 调度器
     private transient Scheduler scheduler;
 
+    // 触发器
     private Trigger trigger;
 
+    // 作业
     private JobDetail jobDetail;
-    
+
+    // 作业数据
     private JobDataMap jobDataMap;
 
+    // 作业实例
     private transient Job job;
-    
+
+    // 日历
     private Calendar calendar;
 
+    // 是否正在恢复
     private boolean recovering = false;
 
+    // 重新触发次数
     private int numRefires = 0;
 
+    // 触发时间
     private Date fireTime;
 
+    // 调度时间
     private Date scheduledFireTime;
 
+    // 上次触发时间
     private Date prevFireTime;
 
+    // 下次触发时间
     private Date nextFireTime;
-    
+
+    // 作业运行时间
     private long jobRunTime = -1;
-    
+
+    // 作业运行结果
     private Object result;
     
     private HashMap<Object, Object> data = new HashMap<Object, Object>();

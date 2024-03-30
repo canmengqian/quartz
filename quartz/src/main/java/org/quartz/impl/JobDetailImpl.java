@@ -80,14 +80,19 @@ public class JobDetailImpl implements Cloneable, java.io.Serializable, JobDetail
 
     private String description;
 
+    // 业务job
     private Class<? extends Job> jobClass;
 
+    // job需要的数据
     private JobDataMap jobDataMap;
 
+    // 是否持久化
     private boolean durability = false;
 
+    // 是否需要恢复
     private boolean shouldRecover = false;
 
+    // job的key
     private transient JobKey key = null;
 
     /*

@@ -45,6 +45,12 @@ public interface SimpleTrigger extends Trigger {
      * </code>.
      * </p>
      */
+    /**
+     * 如果在重复计数 > 0的触发器上使用它，
+     * 那么它等效于指令 MISFIRE _ INstructions _ RESCHEDULE _ NOW _ WITHREMAINING _ REPEAT _ COUNT
+     */
+    // 具体来说，设置这个常量后，调度器会立即执行这个任务，
+    // 而不是等待下一次的触发时间。这个常量在处理一些需要及时执行的任务时非常有用，例如发送延迟邮件、执行定时任务等。
     public static final int MISFIRE_INSTRUCTION_FIRE_NOW = 1;
     
     /**
@@ -134,9 +140,11 @@ public interface SimpleTrigger extends Trigger {
      * ending timestamp.
      * </p>
      */
+    // 不限次数执行
     public static final int REPEAT_INDEFINITELY = -1;
 
     /**
+     *
      * <p>
      * Get the the number of times the <code>SimpleTrigger</code> should
      * repeat, after which it will be automatically deleted.
@@ -151,12 +159,20 @@ public interface SimpleTrigger extends Trigger {
      * Get the the time interval (in milliseconds) at which the <code>SimpleTrigger</code> should repeat.
      * </p>
      */
+    /**
+     * 获取 SimpleTrigger 应该重复的时间间隔(以毫秒为单位)。
+     * @return
+     */
     public long getRepeatInterval();
     
     /**
      * <p>
      * Get the number of times the <code>SimpleTrigger</code> has already fired.
      * </p>
+     */
+    /**
+     * 获取 SimpleTrigger 已经触发的次数。
+     * @return
      */
     public int getTimesTriggered();
 

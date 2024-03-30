@@ -4,16 +4,24 @@
 
 Quartz is a richly featured, open source job scheduling library that can be integrated within virtually any Java application - from the smallest stand-alone application to the largest e-commerce system. Quartz can be used to create simple or complex schedules for executing tens, hundreds, or even tens-of-thousands of jobs; jobs whose tasks are defined as standard Java components that may execute virtually anything you may program them to do. The Quartz Scheduler includes many enterprise-class features, such as support for JTA transactions and clustering.
 
+Quartz 是一个功能丰富的开源作业调度库，实际上可以集成到任何 Java 应用程序中——从最小的独立应用程序到最大的电子商务系统。Quartz 可用于创建简单或复杂的调度，以执行数十、数百甚至数万个作业; 这些作业的任务被定义为标准的 Java 组件，实际上可以执行您可以编程它们所做的任何事情。Quartz 调度器包含许多企业级特性，比如对 JTA 事务和集群的支持。
+
+Quartz 是可免费使用的，采用 Apache 2.0许可证授权
+
 Quartz is freely usable, licensed under the http://www.apache.org/licenses/LICENSE-2.0[Apache 2.0 license]
 
 === What Can Quartz Do For You?
 
 If your application has tasks that need to occur at given moments in time, or if your system has recurring maintenance jobs then Quartz may be your ideal solution.
 
+如果您的应用程序有需要在特定时刻发生的任务，或者如果您的系统有重复的维护任务，那么 Quartz 可能是您的理想解决方案。
+
 Sample uses of job scheduling with Quartz:
 
 * Driving Process Workflow: As a new order is initially placed, schedule a Job to fire in exactly 2 hours, that will check the status of that order, and trigger a warning notification if an order confirmation message has not yet been received for the order, as well as changing the order's status to 'awaiting intervention'.
+* 驱动过程工作流程: 当一个新订单最初下达时，安排一个作业在2小时内发出，这将检查该订单的状态，如果该订单尚未收到订单确认消息，则触发警告通知，并将订单的状态改为“等待干预”。
 * System Maintenance: Schedule a job to dump the contents of a database into an XML file every business day (all weekdays except holidays) at 11:30 PM.
+* 系统维护: 在每个工作日(除节假日外的所有工作日)的晚上11:30安排一个将数据库内容转储到 XML 文件中的作业。
 * Providing reminder services within an application.
 
 === Features
@@ -21,12 +29,26 @@ Sample uses of job scheduling with Quartz:
 ==== Runtime Environments
 
 * Quartz can run embedded within another free standing application
+* Quartz 可以嵌入到另一个独立的应用程序中运行
 * Quartz can be instantiated within an application server (or servlet container), and participate in XA transactions
+* Quartz 可以在应用服务器(或 servlet 容器)中实例化，并参与 XA 事务
 * Quartz can run as a stand-alone program (within its own Java Virtual Machine), to be used via RMI
+* Quartz 可以作为一个独立的程序运行(在它自己的 Java 虚拟机中) ，通过 RMI 使用
 * Quartz can be instantiated as a cluster of stand-alone programs (with load-balance and fail-over capabilities) for the execution of jobs
-
+* Quartz 可以实例化为一个独立程序集群(具有负载平衡和故障转移功能) ，用于执行作业
 
 ==== Job Scheduling
+作业计划在给定触发器发生时运行。触发器几乎可以通过以下指令的任意组合来创建:
+
+* 在一天中的某个时间(毫秒)
+*  在一周中的某些日子
+* 每个月的某些日子
+* 在一年中的某些日子
+* 不在注册日历中列出的某些日子(例如商业假期)
+* 重复了特定的次数
+* 一直重复到特定的时间/日期
+* 无限期地重复
+* 以延迟间隔重复
 
 Jobs are scheduled to run when a given Trigger occurs. Triggers can be created with nearly any combination of
 the following directives:
@@ -41,6 +63,11 @@ the following directives:
 * repeated indefinitely
 * repeated with a delay interval
 
+作业由其创建者命名，也可以组织成命名组，还可以给出触发器
+名称并放置到组中，以便在调度程序中轻松地组织它们
+在企业 Java 环境中，Jobs 可以执行它们的工作
+作为分布式(XA)事务的一部分。
+
 Jobs are given names by their creator and can also be organized into named groups. Triggers may also be given
 names and placed into groups, in order to easily organize them within the scheduler. Jobs can be added to the
 scheduler once, but registered with multiple Triggers. Within an enterprise Java environment, Jobs can perform their work
@@ -48,6 +75,10 @@ as part of a distributed (XA) transaction.
 
 
 ==== Job Execution
+* 作业可以是任何实现简单作业接口的 Java 类，为您的作业可以执行的工作留下无限的可能性。
+* 作业类实例可以由 Quartz 或应用程序框架实例化。
+* 当触发器发生时，调度程序通知零个或多个实现 JobListener 和 TriggerListener 接口的 Java 对象(监听器可以是简单的 Java 对象、 EJB 或 JMS 发布者等)。在执行 Job 之后，也会通知这些侦听器。
+* 当 Jobs 完成时，它们返回一个 JobCompletionCode，通知调度程序成功或失败。JobCompletionCode 还可以根据成功/失败代码指示调度程序应该采取的任何操作，比如立即重新执行 Job。
 
 * Jobs can be any Java class that implements the simple Job interface, leaving infinite possibilities for the work your Jobs can perform.
 * Job class instances can be instantiated by Quartz, or by your application's framework.
@@ -57,6 +88,9 @@ as part of a distributed (XA) transaction.
 
 ==== Job Persistence
 
+* Quartz 的设计包括一个 JobStore 接口，可以实现该接口为作业的存储提供各种机制。
+* 通过使用所包含的 JDbcJobStore，所有配置为“非易失性”的 Jobs 和 Triggers 都通过 JDBC 存储在一个关系数据库中。
+* 通过使用包含的 RAMJobStore，所有的 Jobs 和 Triggers 都存储在 RAM 中，因此在程序执行之间不会持久化——但是这样做的优点是不需要外部数据库。
 * The design of Quartz includes a JobStore interface that can be implemented to provide various mechanisms for the storage of jobs.
 * With the use of the included JDBCJobStore, all Jobs and Triggers configured as "non-volatile" are stored in a relational database via JDBC.
 * With the use of the included RAMJobStore, all Jobs and Triggers are stored in RAM and therefore do not persist between program executions - but this has the advantage of not requiring an external database.
@@ -76,6 +110,9 @@ as part of a distributed (XA) transaction.
 * Terracotta extensions to Quartz provide clustering capabilities without the need for a backing database.
 
 ==== Listeners & Plug-Ins
+* 应用程序可以通过实现一个或多个侦听器接口来捕获调度事件，以监视或控制作业/触发器行为。
+* 可以使用 Plug-In 机制向 Quartz 添加功能，比如保存作业执行的历史记录，或者从文件中加载作业和触发器定义。
+* Quartz 提供了许多“工厂制造”的插件和侦听器。
 
 * Applications can catch scheduling events to monitor or control job/trigger behavior by implementing one or more listener interfaces.
 * The Plug-In mechanism can be used add functionality to Quartz, such keeping a history of job executions, or loading job and trigger definitions from a file.

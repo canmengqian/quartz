@@ -31,8 +31,17 @@ import org.quartz.spi.OperableTrigger;
 
 public interface MutableTrigger extends Trigger {
 
+    /**
+     * <p>
+     * Set the name of the <code>Trigger</code>.
+     * </p>
+     */
     public void setKey(TriggerKey key);
 
+    /**
+     * 设置触发器关联的jobkey
+     * @param key
+     */
     public void setJobKey(JobKey key);
 
     /**

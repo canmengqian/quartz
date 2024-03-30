@@ -59,6 +59,8 @@ public class TriggerUtils {
      */
 
     /**
+     * 该函数用于计算给定触发器的下一个触发时间，并将其存储在一个不可修改的列表中返回。函数首先克隆输入的触发器，然后计算触发器的下一个触发时间，最多计算numTimes个触发时间。
+     * 计算完成后，将触发时间添加到列表中，并返回不可修改的列表。
      * Returns a list of Dates that are the next fire times of a 
      * <code>Trigger</code>.
      * The input trigger will be cloned before any work is done, so you need
@@ -79,13 +81,16 @@ public class TriggerUtils {
         OperableTrigger t = (OperableTrigger) trigg.clone();
 
         if (t.getNextFireTime() == null) {
+            // 计算第一个触发时间
             t.computeFirstFireTime(cal);
         }
 
         for (int i = 0; i < numTimes; i++) {
+            // 计算下一个触发时间
             Date d = t.getNextFireTime();
             if (d != null) {
                 lst.add(d);
+                // 计算下一个触发时间
                 t.triggered(cal);
             } else {
                 break;

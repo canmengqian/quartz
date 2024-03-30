@@ -24,6 +24,10 @@ public interface OperableTrigger extends MutableTrigger {
      * 
      * @see #executionComplete(JobExecutionContext, JobExecutionException)
      */
+    /**
+     * 作用：触发器触发
+     * @param calendar
+     */
     public void triggered(Calendar calendar);
 
     /**

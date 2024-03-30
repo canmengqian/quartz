@@ -92,27 +92,34 @@ import org.slf4j.LoggerFactory;
  * @see JobStore
  * @see ThreadPool
  */
+
+
 public class DirectSchedulerFactory implements SchedulerFactory {
 
     /*
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
-     * Constants.
+     * Constants.默认的实例id
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
     public static final String DEFAULT_INSTANCE_ID = "SIMPLE_NON_CLUSTERED";
 
+    // 默认的scheduler名称
     public static final String DEFAULT_SCHEDULER_NAME = "SimpleQuartzScheduler";
 
+    // 是否导出到JMX
     private static final boolean DEFAULT_JMX_EXPORT = false;
 
     private static final String DEFAULT_JMX_OBJECTNAME = null;
 
+    // 默认的线程池
     private static final DefaultThreadExecutor DEFAULT_THREAD_EXECUTOR = new DefaultThreadExecutor();
 
+    // 默认的批量大小
     private static final int DEFAULT_BATCH_MAX_SIZE = 1;
 
+    // 默认的批量时间窗口
     private static final long DEFAULT_BATCH_TIME_WINDOW = 0L;
 
     /*
@@ -125,6 +132,7 @@ public class DirectSchedulerFactory implements SchedulerFactory {
 
     private boolean initialized = false;
 
+    // 单例
     private static DirectSchedulerFactory instance = new DirectSchedulerFactory();
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -170,6 +178,7 @@ public class DirectSchedulerFactory implements SchedulerFactory {
      */
     public void createVolatileScheduler(int maxThreads)
         throws SchedulerException {
+        // 创建临时线程池和基于内存的job store
         SimpleThreadPool threadPool = new SimpleThreadPool(maxThreads,
                 Thread.NORM_PRIORITY);
         JobStore jobStore = new RAMJobStore();
@@ -326,6 +335,7 @@ public class DirectSchedulerFactory implements SchedulerFactory {
             JobStore jobStore, String rmiRegistryHost, int rmiRegistryPort,
             long idleWaitTime, long dbFailureRetryInterval)
         throws SchedulerException {
+        // 增加重试间隔
         createScheduler(schedulerName,
                 schedulerInstanceId, threadPool,
                 jobStore, null, // plugins
@@ -368,6 +378,7 @@ public class DirectSchedulerFactory implements SchedulerFactory {
             long idleWaitTime, long dbFailureRetryInterval,
             boolean jmxExport, String jmxObjectName)
         throws SchedulerException {
+        // 增加默认的执行器
         createScheduler(schedulerName, schedulerInstanceId, threadPool,
                 DEFAULT_THREAD_EXECUTOR, jobStore, schedulerPluginMap,
                 rmiRegistryHost, rmiRegistryPort, idleWaitTime,
@@ -506,7 +517,7 @@ public class DirectSchedulerFactory implements SchedulerFactory {
      */
     public void createScheduler(String schedulerName,
                                 String schedulerInstanceId, ThreadPool threadPool,
-                                ThreadExecutor threadExecutor,
+                                ThreadExecutor threadExecutor,// 线程执行器有什么用：只是启动线程
                                 JobStore jobStore, Map<String, SchedulerPlugin> schedulerPluginMap,
                                 String rmiRegistryHost, int rmiRegistryPort,
                                 long idleWaitTime, long dbFailureRetryInterval,
@@ -515,22 +526,27 @@ public class DirectSchedulerFactory implements SchedulerFactory {
                                 boolean makeSchedThreadDaemon)
             throws SchedulerException {
 
-        // Currently only one run-shell factory is available...
-        JobRunShellFactory jrsf = new StdJobRunShellFactory();
-
-        // Fire everything up
+        // Fire everything up 默认是个简单的线程池
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         threadPool.setInstanceName(schedulerName);
+        // 初始化线程池
         threadPool.initialize();
-        
+        // Currently only one run-shell factory is available...
+        //翻译：创建一个调度器
+        JobRunShellFactory jrsf = new StdJobRunShellFactory();
+
+
+        // 创建调度器资源
         QuartzSchedulerResources qrs = new QuartzSchedulerResources();
 
         qrs.setName(schedulerName);
         qrs.setInstanceId(schedulerInstanceId);
+        // 设置线程池是否为守护线程
         qrs.setMakeSchedulerThreadDaemon(makeSchedThreadDaemon);
         SchedulerDetailsSetter.setDetails(threadPool, schedulerName, schedulerInstanceId);
         qrs.setJobRunShellFactory(jrsf);
         qrs.setThreadPool(threadPool);
+        //TODO  线程执行器作用
         qrs.setThreadExecutor(threadExecutor);
         qrs.setJobStore(jobStore);
         qrs.setMaxBatchSize(maxBatchSize);
@@ -543,19 +559,23 @@ public class DirectSchedulerFactory implements SchedulerFactory {
         }
         
         // add plugins
+        // 添加插件
         if (schedulerPluginMap != null) {
             for (Iterator<SchedulerPlugin> pluginIter = schedulerPluginMap.values().iterator(); pluginIter.hasNext();) {
                 qrs.addSchedulerPlugin(pluginIter.next());
             }
         }
 
+        // TODO
         QuartzScheduler qs = new QuartzScheduler(qrs, idleWaitTime, dbFailureRetryInterval);
 
         ClassLoadHelper cch = new CascadingClassLoadHelper();
+        // 初始化类加载器
         cch.initialize();
 
         SchedulerDetailsSetter.setDetails(jobStore, schedulerName, schedulerInstanceId);
 
+        // Initialize the job store
         jobStore.initialize(cch, qs.getSchedulerSignaler());
 
         Scheduler scheduler = new StdScheduler(qs);

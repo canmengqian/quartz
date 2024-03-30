@@ -121,9 +121,11 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
         this.qs = sched;
 
         Job job = null;
+        // 获取任务详情
         JobDetail jobDetail = firedTriggerBundle.getJobDetail();
 
         try {
+            // 实例化一个任务
             job = sched.getJobFactory().newJob(firedTriggerBundle, scheduler);
         } catch (SchedulerException se) {
             sched.notifySchedulerListenersError(
@@ -140,6 +142,7 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
             throw se;
         }
 
+        // 创建任务执行上下文
         this.jec = new JobExecutionContextImpl(scheduler, firedTriggerBundle, job);
     }
 
@@ -148,18 +151,22 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
     }
 
     public void run() {
+        // 注册监听器
         qs.addInternalSchedulerListener(this);
 
         try {
+            // 获取触发器
             OperableTrigger trigger = (OperableTrigger) jec.getTrigger();
             JobDetail jobDetail = jec.getJobDetail();
 
             do {
 
                 JobExecutionException jobExEx = null;
+                // 获取任务实例
                 Job job = jec.getJobInstance();
 
                 try {
+                    // 开启用户自定义事务
                     begin();
                 } catch (SchedulerException se) {
                     qs.notifySchedulerListenersError("Error executing Job ("
@@ -184,6 +191,7 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
                             qs.notifySchedulerListenersFinalized(jec.getTrigger());
                         }
 
+                        // 完成
                         complete(true);
                     } catch (SchedulerException se) {
                         qs.notifySchedulerListenersError("Error during veto of Job ("
@@ -221,6 +229,7 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
                 jec.setJobRunTime(endTime - startTime);
 
                 // notify all job listeners
+                // 通知job完成
                 if (!notifyJobListenersComplete(jec, jobExEx)) {
                     break;
                 }
@@ -293,6 +302,7 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
 
         // notify all trigger listeners
         try {
+            // 执行触发器通知
             vetoed = qs.notifyTriggerListenersFired(jobExCtxt);
         } catch (SchedulerException se) {
             qs.notifySchedulerListenersError(
@@ -306,6 +316,7 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
 
         if(vetoed) {
             try {
+                // 触发器拒绝执行通知
                 qs.notifyJobListenersWasVetoed(jobExCtxt);
             } catch (SchedulerException se) {
                 qs.notifySchedulerListenersError(
@@ -321,8 +332,10 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
 
         // notify all job listeners
         try {
+            // job将要被执行通知
             qs.notifyJobListenersToBeExecuted(jobExCtxt);
         } catch (SchedulerException se) {
+            // 执行失败通知
             qs.notifySchedulerListenersError(
                     "Unable to notify JobListener(s) of Job to be executed: "
                             + "(Job will NOT be executed!). trigger= "

@@ -14,18 +14,31 @@ ones.
 First, link:downloads.adoc[Download] the most recent stable release - registration is not required. Unpack the distribution and install it so that your application can see it.
 
 == The Quartz JAR Files
+Quartz 包包含许多 jar 文件，位于发行版的根目录中。主 Quartz 库被命名为 stone-xxx.jar (其中 xxx 是一个版本号)。为了使用 Quartz 的任何特性，这个 jar 必须位于应用程序的类路径上。
+
+下载完 Quartz 之后，将其解压缩到某个地方，获取石英 -xxx.jar 并将其放在您想要的位置。(如果您需要有关如何解压缩文件的信息，那么在您接近开发环境或一般的 Internet 之前，请离开并学习。说真的。)
+
 
 The Quartz package includes a number of jar files, located in root directory of the distribution. The main Quartz library is named quartz-xxx.jar (where xxx is a version number). In order to use any of Quartz's features, this jar must be located on your application's classpath.
 
 Once you've downloaded Quartz, unzip it somewhere, grab the quartz-xxx.jar and put it where you want it. (If you need information on how to unzip files, go away and learn before you go anywhere near a development environment or the Internet in general. Seriously.)
 
+我主要在应用服务器环境中使用 Quartz，因此我倾向于在企业应用程序中包含 Quartz JAR (。耳朵或。战争档案)。但是，如果您希望许多应用程序都可以使用 Quartz，那么只需确保它位于应用服务器的类路径上。如果您正在创建一个独立的应用程序，那么将它与您的应用程序所依赖的所有其他 JAR 一起放在应用程序的类路径上。
+
 I use Quartz primarily within an application server environment, so my preference is to include the Quartz JAR within my enterprise application (.ear or .war file). However, if you want to make Quartz available to many applications then simply make sure it's on the classpath of your appserver. If you are making a stand-alone application, place it on the application's classpath with all of the other JARs your application depends upon.
+
+Quartz 依赖于发行版中包含的许多第三方库(以 jar 的形式)。“ lib”目录中的 zip 文件。要使用 Quartz 的所有特性，所有这些 jar 也必须存在于您的类路径中。如果您正在构建一个独立的 Quartz 应用程序，我建议您将它们全部添加到类路径中。如果您在应用服务器环境中使用 Quartz，那么至少有一些 jar 可能已经存在于类路径中，因此您可以(如果您愿意)对包含哪些 jar 进行更多的选择。
 
 Quartz depends on a number of third-party libraries (in the form of jars) which are included in the distribution .zip file in the ‘lib' directory. To use all the features of Quartz, all of these jars must also exist on your classpath. If you're building a stand-alone Quartz application, I suggest you simply add all of them to the classpath. If you're using Quartz within an app server environment, at least some of the jars will likely already exist on the classpath, so you can afford (if you want) to be a bit more selective as to which jars you include.
 
 NOTE: In an appserver environment, beware of strange results when accidentally including two different versions of the same jar. For example, WebLogic includes an implementation of J2EE (inside weblogic.jar) which may differ to the one in servlet.jar. In this case, it's usually better to leave servlet.jar out of your application, so you know which classes are being utilized.
 
 == The Properties File
+
+Quartz 使用一个名为(在原创性方面值得称赞)‘ Quartz.properties’的属性文件。一开始没有这个必要，但是要使用除了最基本的配置之外的任何配置，它必须位于您的类路径上。
+
+同样，为了给出一个基于我个人情况的例子，我的应用程序是使用 WebLogic Works 开发的。我将所有配置文件(包括 Quartz.properties)保存在应用程序根目录下的一个项目中。当我把所有东西打包成。Ear 文件中，配置项目被打包成一个。这是包括在决赛。耳朵。这会自动将 Quartz.properties 放在类路径上。
+
 
 Quartz uses a properties file called (kudos on the originality) `quartz.properties`. This isn't necessary at first, but to use anything but the most basic configuration it must be located on your classpath.
 

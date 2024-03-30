@@ -97,7 +97,9 @@ public class TriggerBuilder<T extends Trigger> {
     public T build() {
 
         if(scheduleBuilder == null)
+            // 创建一个默认的SimpleScheduleBuilder
             scheduleBuilder = SimpleScheduleBuilder.simpleSchedule();
+        // Build the trigger
         MutableTrigger trig = scheduleBuilder.build();
         
         trig.setCalendarName(calendarName);
@@ -118,6 +120,7 @@ public class TriggerBuilder<T extends Trigger> {
     }
 
     /**
+     * 设置唯一标识
      * Use a <code>TriggerKey</code> with the given name and default group to
      * identify the Trigger.
      * 
@@ -210,6 +213,7 @@ public class TriggerBuilder<T extends Trigger> {
     }
     
     /**
+     * 设置触发器应该启动的时间
      * Set the time the Trigger should start at - the trigger may or may
      * not fire at this time - depending upon the schedule configured for
      * the Trigger.  However the Trigger will NOT fire before this time,
@@ -226,6 +230,8 @@ public class TriggerBuilder<T extends Trigger> {
     }
     
     /**
+     * 触发器立即启动
+     *
      * Set the time the Trigger should start at to the current moment - 
      * the trigger may or may not fire at this time - depending upon the 
      * schedule configured for the Trigger.  
@@ -273,6 +279,7 @@ public class TriggerBuilder<T extends Trigger> {
     }
 
     /**
+     * 设置业务JOB绑定关系
      * Set the identity of the Job which should be fired by the produced 
      * Trigger.
      * 

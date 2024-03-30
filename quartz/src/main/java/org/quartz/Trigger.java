@@ -44,6 +44,8 @@ import java.util.Date;
  * into the <code>JobDataMap</code> on the <code>Trigger</code>.
  * </p>
  *
+ * 多个触发器可以指向同一个作业，但是一个触发器只能指向一个作业。
+ * 通过将内容放入触发器的JobDataMap中，触发器可以将参数/数据“发送”给作业。
  * @see TriggerBuilder
  * @see JobDataMap
  * @see JobExecutionContext

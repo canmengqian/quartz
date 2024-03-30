@@ -105,6 +105,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
     private static String VERSION_MINOR = "UNKNOWN";
     private static String VERSION_ITERATION = "UNKNOWN";
 
+    // 获取版本信息
     static {
         Properties props = new Properties();
         InputStream is = null;
@@ -153,16 +154,20 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
     private SchedulerContext context = new SchedulerContext();
 
+    // 监听器管理器
     private ListenerManager listenerManager = new ListenerManagerImpl();
-    
+    // 内部job监听器
     private HashMap<String, JobListener> internalJobListeners = new HashMap<String, JobListener>(10);
 
+    // 内部触发器监听器
     private HashMap<String, TriggerListener> internalTriggerListeners = new HashMap<String, TriggerListener>(10);
 
+    // 内部调度器监听器
     private ArrayList<SchedulerListener> internalSchedulerListeners = new ArrayList<SchedulerListener>(10);
 
     private JobFactory jobFactory = new PropertySettingJobFactory();
-    
+
+    // 正在执行的任务管理器
     ExecutingJobsManager jobMgr = null;
 
     ErrorLogger errLogger = null;
@@ -171,11 +176,13 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
     private Random random = new Random();
 
+    // 防止GC
     private ArrayList<Object> holdToPreventGC = new ArrayList<Object>(5);
 
     private boolean signalOnSchedulingChange = true;
 
-    private volatile boolean closed = false;
+    // 当前调度器是否已经关闭
+    private volatile boolean closed = false;//
     private volatile boolean shuttingDown = false;
     private boolean boundRemotely = false;
 
@@ -208,22 +215,30 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
     public QuartzScheduler(QuartzSchedulerResources resources, long idleWaitTime, @Deprecated long dbRetryInterval)
         throws SchedulerException {
         this.resources = resources;
+        // 将jobStore注册为内部jobListener
         if (resources.getJobStore() instanceof JobListener) {
             addInternalJobListener((JobListener)resources.getJobStore());
         }
 
+        // 创建调度线程
         this.schedThread = new QuartzSchedulerThread(this, resources);
+        // 创建线程执行器
         ThreadExecutor schedThreadExecutor = resources.getThreadExecutor();
+        // 启动trigger调度线程
         schedThreadExecutor.execute(this.schedThread);
         if (idleWaitTime > 0) {
+            // 设置调度线程空闲等待时间
             this.schedThread.setIdleWaitTime(idleWaitTime);
         }
-
+        // 创建正在执行的任务管理器
         jobMgr = new ExecutingJobsManager();
+        // 将正在执行的任务管理器注册为内部jobListener
         addInternalJobListener(jobMgr);
+        // 创建错误日志监听器
         errLogger = new ErrorLogger();
+        // 将错误日志监听器注册为内部调度器监听器
         addInternalSchedulerListener(errLogger);
-
+        // 创建调度器信号器
         signaler = new SchedulerSignalerImpl(this, this.schedThread);
         
         getLog().info("Quartz Scheduler v" + getVersion() + " created.");
@@ -525,6 +540,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
      */
     public void start() throws SchedulerException {
 
+        //已经关停或关闭则不允许重新启动
         if (shuttingDown|| closed) {
             throw new SchedulerException(
                     "The Scheduler cannot be restarted after shutdown() has been called.");
@@ -532,13 +548,17 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
         // QTZ-212 : calling new schedulerStarting() method on the listeners
         // right after entering start()
+        //发出启动事件
         notifySchedulerListenersStarting();
 
         if (initialStart == null) {
             initialStart = new Date();
-            this.resources.getJobStore().schedulerStarted();            
+            // 启动调度器
+            this.resources.getJobStore().schedulerStarted();
+            // 启动插件
             startPlugins();
         } else {
+            // 恢复调度器
             resources.getJobStore().schedulerResumed();
         }
 
@@ -552,6 +572,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
     public void startDelayed(final int seconds) throws SchedulerException
     {
+        // 延迟指定的秒数启动
         if (shuttingDown || closed) {
             throw new SchedulerException(
                     "The Scheduler cannot be restarted after shutdown() has been called.");

@@ -107,13 +107,13 @@ import java.util.Properties;
  * to primitive Java types (int, long, float, double, boolean, and String) are
  * performed before calling the property's setter method.
  * </p>
- * 
+ *
  * <p>
  * One property can reference another property's value by specifying a value
  * following the convention of "$@other.property.name", for example, to reference
  * the scheduler's instance name as the value for some other property, you
  * would use "$@org.quartz.scheduler.instanceName".
- * </p> 
+ * </p>
  *
  * @author James House
  * @author Anthony Eden
@@ -138,7 +138,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
     public static final String PROP_SCHED_INSTANCE_ID_GENERATOR_PREFIX = "org.quartz.scheduler.instanceIdGenerator";
 
     public static final String PROP_SCHED_INSTANCE_ID_GENERATOR_CLASS =
-        PROP_SCHED_INSTANCE_ID_GENERATOR_PREFIX + ".class";
+            PROP_SCHED_INSTANCE_ID_GENERATOR_PREFIX + ".class";
 
     public static final String PROP_SCHED_THREAD_NAME = "org.quartz.scheduler.threadName";
 
@@ -153,7 +153,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
     public static final String PROP_SCHED_JMX_PROXY = "org.quartz.scheduler.jmx.proxy";
 
     public static final String PROP_SCHED_JMX_PROXY_CLASS = "org.quartz.scheduler.jmx.proxy.class";
-    
+
     public static final String PROP_SCHED_RMI_EXPORT = "org.quartz.scheduler.rmi.export";
 
     public static final String PROP_SCHED_RMI_PROXY = "org.quartz.scheduler.rmi.proxy";
@@ -200,18 +200,23 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
     public static final String PROP_JOB_STORE_LOCK_HANDLER_PREFIX = PROP_JOB_STORE_PREFIX + ".lockHandler";
 
+    // JobStore Lock Handler
     public static final String PROP_JOB_STORE_LOCK_HANDLER_CLASS = PROP_JOB_STORE_LOCK_HANDLER_PREFIX + ".class";
 
+    // 表前缀
     public static final String PROP_TABLE_PREFIX = "tablePrefix";
 
+    // 调度器前缀
     public static final String PROP_SCHED_NAME = "schedName";
 
     public static final String PROP_JOB_STORE_CLASS = "org.quartz.jobStore.class";
 
     public static final String PROP_JOB_STORE_USE_PROP = "org.quartz.jobStore.useProperties";
 
+    // 数据源
     public static final String PROP_DATASOURCE_PREFIX = "org.quartz.dataSource";
 
+    // 连接提供者
     public static final String PROP_CONNECTION_PROVIDER_CLASS = "connectionProvider.class";
 
     /**
@@ -281,7 +286,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
     public static final String PROP_THREAD_EXECUTOR_CLASS = "org.quartz.threadExecutor.class";
 
     public static final String SYSTEM_PROPERTY_AS_INSTANCE_ID = "SYS_PROP";
-    
+
     public static final String MANAGEMENT_REST_SERVICE_ENABLED = "org.quartz.managementRESTService.enabled";
 
     public static final String MANAGEMENT_REST_SERVICE_HOST_PORT = "org.quartz.managementRESTService.bind";
@@ -294,10 +299,12 @@ public class StdSchedulerFactory implements SchedulerFactory {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
+    // 初始化错误
     private SchedulerException initException = null;
 
     private String propSrc = null;
 
+    // 配置解析器
     private PropertiesParser cfg;
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -379,10 +386,12 @@ public class StdSchedulerFactory implements SchedulerFactory {
         if (cfg != null) {
             return;
         }
+        // 不允许重复初始化
         if (initException != null) {
             throw initException;
         }
 
+        // 获取配置文件
         String requestedFile = System.getProperty(PROPERTIES_FILE);
         String propFileName = requestedFile != null ? requestedFile
                 : "quartz.properties";
@@ -395,6 +404,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         try {
             if (propFile.exists()) {
                 try {
+                    // 自定义属性文件
                     if (requestedFile != null) {
                         propSrc = "specified file: '" + requestedFile + "'";
                     } else {
@@ -410,12 +420,13 @@ public class StdSchedulerFactory implements SchedulerFactory {
                     throw initException;
                 }
             } else if (requestedFile != null) {
+                // 当前线程所属的资源
                 in =
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream(requestedFile);
+                        Thread.currentThread().getContextClassLoader().getResourceAsStream(requestedFile);
 
-                if(in == null) {
+                if (in == null) {
                     initException = new SchedulerException("Properties file: '"
-                        + requestedFile + "' could not be found.");
+                            + requestedFile + "' could not be found.");
                     throw initException;
                 }
 
@@ -434,9 +445,10 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 propSrc = "default resource file in Quartz package: 'quartz.properties'";
 
                 ClassLoader cl = getClass().getClassLoader();
-                if(cl == null)
+                if (cl == null)
+                    // 尝试使用当前线程的类加载器
                     cl = findClassloader();
-                if(cl == null)
+                if (cl == null)
                     throw new SchedulerConfigException("Unable to find a class loader on the current thread or class.");
 
                 in = cl.getResourceAsStream(
@@ -451,6 +463,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
                             "org/quartz/quartz.properties");
                 }
                 if (in == null) {
+                    // 加载不上资源抛出异常
                     initException = new SchedulerException(
                             "Default quartz.properties not found in class path");
                     throw initException;
@@ -465,11 +478,13 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 }
             }
         } finally {
-            if(in != null) {
-                try { in.close(); } catch(IOException ignore) { /* ignore */ }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ignore) { /* ignore */ }
             }
         }
-
+        // 初始化解析器
         initialize(overrideWithSysProps(props, getLog()));
     }
 
@@ -484,15 +499,15 @@ public class StdSchedulerFactory implements SchedulerFactory {
             sysProps = System.getProperties();
         } catch (AccessControlException e) {
             log.warn(
-                "Skipping overriding quartz properties with System properties " +
-                "during initialization because of an AccessControlException.  " +
-                "This is likely due to not having read/write access for " +
-                "java.util.PropertyPermission as required by java.lang.System.getProperties().  " +
-                "To resolve this warning, either add this permission to your policy file or " +
-                "use a non-default version of initialize().",
-                e);
+                    "Skipping overriding quartz properties with System properties " +
+                            "during initialization because of an AccessControlException.  " +
+                            "This is likely due to not having read/write access for " +
+                            "java.util.PropertyPermission as required by java.lang.System.getProperties().  " +
+                            "To resolve this warning, either add this permission to your policy file or " +
+                            "use a non-default version of initialize().",
+                    e);
         }
-
+        // 系统资源优先
         if (sysProps != null) {
             // Use the propertyNames to iterate to avoid 
             // a possible ConcurrentModificationException
@@ -533,7 +548,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
 
         try {
-            if(is != null) {
+            if (is != null) {
                 is = new BufferedInputStream(is);
                 propSrc = "the specified file : '" + filename + "' from the class resource path.";
             } else {
@@ -545,10 +560,12 @@ public class StdSchedulerFactory implements SchedulerFactory {
             initException = new SchedulerException("Properties file: '"
                     + filename + "' could not be read.", ioe);
             throw initException;
-        }
-        finally {
-            if(is != null)
-                try { is.close(); } catch(IOException ignore) {}
+        } finally {
+            if (is != null)
+                try {
+                    is.close();
+                } catch (IOException ignore) {
+                }
         }
 
         initialize(props);
@@ -562,7 +579,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
      * </p>
      */
     public void initialize(InputStream propertiesStream)
-        throws SchedulerException {
+            throws SchedulerException {
         // short-circuit if already initialized
         if (cfg != null) {
             return;
@@ -606,7 +623,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         this.cfg = new PropertiesParser(props);
     }
 
-    private Scheduler instantiate() throws SchedulerException {
+    private Scheduler instantiate() throws SchedulerException  {
         if (cfg == null) {
             initialize();
         }
@@ -630,7 +647,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         String jobFactoryClass;
         ThreadExecutor threadExecutor;
 
-
+        // 调度仓库
         SchedulerRepository schedRep = SchedulerRepository.getInstance();
 
         // Get Scheduler Properties
@@ -647,22 +664,22 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
         if (schedInstId.equals(AUTO_GENERATE_INSTANCE_ID)) {
             autoId = true;
+            // id生成类
             instanceIdGeneratorClass = cfg.getStringProperty(
                     PROP_SCHED_INSTANCE_ID_GENERATOR_CLASS,
                     "org.quartz.simpl.SimpleInstanceIdGenerator");
-        }
-        else if (schedInstId.equals(SYSTEM_PROPERTY_AS_INSTANCE_ID)) {
+        } else if (schedInstId.equals(SYSTEM_PROPERTY_AS_INSTANCE_ID)) {
             autoId = true;
-            instanceIdGeneratorClass = 
+            instanceIdGeneratorClass =
                     "org.quartz.simpl.SystemPropertyInstanceIdGenerator";
         }
-
+        // 用户事务
         userTXLocation = cfg.getStringProperty(PROP_SCHED_USER_TX_URL,
                 userTXLocation);
         if (userTXLocation != null && userTXLocation.trim().length() == 0) {
             userTXLocation = null;
         }
-
+        // 类加载器
         classLoadHelperClass = cfg.getStringProperty(
                 PROP_SCHED_CLASS_LOAD_HELPER_CLASS,
                 "org.quartz.simpl.CascadingClassLoadHelper");
@@ -674,20 +691,20 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
         idleWaitTime = cfg.getLongProperty(PROP_SCHED_IDLE_WAIT_TIME,
                 idleWaitTime);
-        if(idleWaitTime > -1 && idleWaitTime < 1000) {
+        if (idleWaitTime > -1 && idleWaitTime < 1000) {
             throw new SchedulerException("org.quartz.scheduler.idleWaitTime of less than 1000ms is not legal.");
         }
-        
+        // DB连接失败重试间隔
         dbFailureRetry = cfg.getLongProperty(PROP_SCHED_DB_FAILURE_RETRY_INTERVAL, dbFailureRetry);
         if (dbFailureRetry < 0) {
             throw new SchedulerException(PROP_SCHED_DB_FAILURE_RETRY_INTERVAL + " of less than 0 ms is not legal.");
         }
 
         boolean makeSchedulerThreadDaemon =
-            cfg.getBooleanProperty(PROP_SCHED_MAKE_SCHEDULER_THREAD_DAEMON);
+                cfg.getBooleanProperty(PROP_SCHED_MAKE_SCHEDULER_THREAD_DAEMON);
 
         boolean threadsInheritInitalizersClassLoader =
-            cfg.getBooleanProperty(PROP_SCHED_SCHEDULER_THREADS_INHERIT_CONTEXT_CLASS_LOADER_OF_INITIALIZING_THREAD);
+                cfg.getBooleanProperty(PROP_SCHED_SCHEDULER_THREADS_INHERIT_CONTEXT_CLASS_LOADER_OF_INITIALIZING_THREAD);
 
         long batchTimeWindow = cfg.getLongProperty(PROP_SCHED_BATCH_TIME_WINDOW, 0L);
         int maxBatchSize = cfg.getIntProperty(PROP_SCHED_MAX_BATCH_SIZE, 1);
@@ -697,7 +714,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
         boolean jmxExport = cfg.getBooleanProperty(PROP_SCHED_JMX_EXPORT);
         String jmxObjectName = cfg.getStringProperty(PROP_SCHED_JMX_OBJECT_NAME);
-        
+
         boolean jmxProxy = cfg.getBooleanProperty(PROP_SCHED_JMX_PROXY);
         String jmxProxyClass = cfg.getStringProperty(PROP_SCHED_JMX_PROXY_CLASS);
 
@@ -710,11 +727,11 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 PROP_SCHED_RMI_CREATE_REGISTRY,
                 QuartzSchedulerResources.CREATE_REGISTRY_NEVER);
         String rmiBindName = cfg.getStringProperty(PROP_SCHED_RMI_BIND_NAME);
-
+        // JMX和RMI不能同时启用
         if (jmxProxy && rmiProxy) {
             throw new SchedulerConfigException("Cannot proxy both RMI and JMX.");
         }
-        
+
         boolean managementRESTServiceEnabled = cfg.getBooleanProperty(MANAGEMENT_REST_SERVICE_ENABLED, false);
         String managementRESTServiceHostAndPort = cfg.getStringProperty(MANAGEMENT_REST_SERVICE_HOST_PORT, "0.0.0.0:9889");
 
@@ -749,6 +766,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
                     "Unable to instantiate class load helper class: "
                             + e.getMessage(), e);
         }
+        // 加载器初始化
         loadHelper.initialize();
 
         // If Proxying to remote JMX scheduler, short-circuit here...
@@ -764,7 +782,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
             RemoteMBeanScheduler jmxScheduler = null;
             try {
-                jmxScheduler = (RemoteMBeanScheduler)loadHelper.loadClass(jmxProxyClass)
+                jmxScheduler = (RemoteMBeanScheduler) loadHelper.loadClass(jmxProxyClass)
                         .newInstance();
             } catch (Exception e) {
                 throw new SchedulerConfigException(
@@ -793,10 +811,11 @@ public class StdSchedulerFactory implements SchedulerFactory {
             return jmxScheduler;
         }
 
-        
+
         JobFactory jobFactory = null;
-        if(jobFactoryClass != null) {
+        if (jobFactoryClass != null) {
             try {
+                // 实例化自定义Job工厂
                 jobFactory = (JobFactory) loadHelper.loadClass(jobFactoryClass)
                         .newInstance();
             } catch (Exception e) {
@@ -816,14 +835,15 @@ public class StdSchedulerFactory implements SchedulerFactory {
         }
 
         InstanceIdGenerator instanceIdGenerator = null;
-        if(instanceIdGeneratorClass != null) {
+        if (instanceIdGeneratorClass != null) {
             try {
+                // 尝试实例化
                 instanceIdGenerator = (InstanceIdGenerator) loadHelper.loadClass(instanceIdGeneratorClass)
-                    .newInstance();
+                        .newInstance();
             } catch (Exception e) {
                 throw new SchedulerConfigException(
                         "Unable to instantiate InstanceIdGenerator class: "
-                        + e.getMessage(), e);
+                                + e.getMessage(), e);
             }
 
             tProps = cfg.getPropertyGroup(PROP_SCHED_INSTANCE_ID_GENERATOR_PREFIX, true);
@@ -839,6 +859,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         // Get ThreadPool Properties
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+        // 使用自定义线程池或默认线程池SimpleThreadPool
         String tpClass = cfg.getStringProperty(PROP_THREAD_POOL_CLASS, SimpleThreadPool.class.getName());
 
         if (tpClass == null) {
@@ -865,7 +886,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
         // Get JobStore Properties
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+        // 设置自定义JobStore或使用默认RAMJobStore
         String jsClass = cfg.getStringProperty(PROP_JOB_STORE_CLASS,
                 RAMJobStore.class.getName());
 
@@ -883,9 +904,10 @@ public class StdSchedulerFactory implements SchedulerFactory {
             throw initException;
         }
 
+        // 设置调度器名称和id
         SchedulerDetailsSetter.setDetails(js, schedName, schedInstId);
 
-        tProps = cfg.getPropertyGroup(PROP_JOB_STORE_PREFIX, true, new String[] {PROP_JOB_STORE_LOCK_HANDLER_PREFIX});
+        tProps = cfg.getPropertyGroup(PROP_JOB_STORE_PREFIX, true, new String[]{PROP_JOB_STORE_LOCK_HANDLER_PREFIX});
         try {
             setBeanProps(js, tProps);
         } catch (Exception e) {
@@ -899,14 +921,15 @@ public class StdSchedulerFactory implements SchedulerFactory {
             String lockHandlerClass = cfg.getStringProperty(PROP_JOB_STORE_LOCK_HANDLER_CLASS);
             if (lockHandlerClass != null) {
                 try {
-                    Semaphore lockHandler = (Semaphore)loadHelper.loadClass(lockHandlerClass).newInstance();
+                    // 使用内存屏障 充当锁处理器
+                    Semaphore lockHandler = (Semaphore) loadHelper.loadClass(lockHandlerClass).newInstance();
 
                     tProps = cfg.getPropertyGroup(PROP_JOB_STORE_LOCK_HANDLER_PREFIX, true);
 
                     // If this lock handler requires the table prefix, add it to its properties.
                     if (lockHandler instanceof TablePrefixAware) {
                         tProps.setProperty(
-                                PROP_TABLE_PREFIX, ((JobStoreSupport)js).getTablePrefix());
+                                PROP_TABLE_PREFIX, ((JobStoreSupport) js).getTablePrefix());
                         tProps.setProperty(
                                 PROP_SCHED_NAME, schedName);
                     }
@@ -918,8 +941,8 @@ public class StdSchedulerFactory implements SchedulerFactory {
                                 + "' props could not be configured.", e);
                         throw initException;
                     }
-
-                    ((JobStoreSupport)js).setLockHandler(lockHandler);
+                    // 对JobStoreSupport设置锁处理器
+                    ((JobStoreSupport) js).setLockHandler(lockHandler);
                     getLog().info("Using custom data access locking (synchronization): " + lockHandlerClass);
                 } catch (Exception e) {
                     initException = new SchedulerException("JobStore LockHandler class '" + lockHandlerClass
@@ -932,6 +955,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         // Set up any DataSources
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+        // 多数据源
         String[] dsNames = cfg.getPropertyGroups(PROP_DATASOURCE_PREFIX);
         for (int i = 0; i < dsNames.length; i++) {
             PropertiesParser pp = new PropertiesParser(cfg.getPropertyGroup(
@@ -939,8 +963,9 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
             String cpClass = pp.getStringProperty(PROP_CONNECTION_PROVIDER_CLASS, null);
 
+            // 自定义数据库连接池
             // custom connectionProvider...
-            if(cpClass != null) {
+            if (cpClass != null) {
                 ConnectionProvider cp = null;
                 try {
                     cp = (ConnectionProvider) loadHelper.loadClass(cpClass).newInstance();
@@ -956,10 +981,12 @@ public class StdSchedulerFactory implements SchedulerFactory {
                             PROP_CONNECTION_PROVIDER_CLASS);
 
                     if (cp instanceof PoolingConnectionProvider) {
-                        populateProviderWithExtraProps((PoolingConnectionProvider)cp, pp.getUnderlyingProperties());
+                        // 设置属性
+                        populateProviderWithExtraProps((PoolingConnectionProvider) cp, pp.getUnderlyingProperties());
                     } else {
                         setBeanProps(cp, pp.getUnderlyingProperties());
                     }
+                    // 初始化连接池
                     cp.initialize();
                 } catch (Exception e) {
                     initException = new SchedulerException("ConnectionProvider class '" + cpClass
@@ -967,11 +994,13 @@ public class StdSchedulerFactory implements SchedulerFactory {
                     throw initException;
                 }
 
+                // 获取数据库连接管理器
                 dbMgr = DBConnectionManager.getInstance();
                 dbMgr.addConnectionProvider(dsNames[i], cp);
             } else {
                 String dsJndi = pp.getStringProperty(PROP_DATASOURCE_JNDI_URL, null);
 
+                // JNDI模式
                 if (dsJndi != null) {
                     boolean dsAlwaysLookup = pp.getBooleanProperty(
                             PROP_DATASOURCE_JNDI_ALWAYS_LOOKUP);
@@ -1009,6 +1038,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
                     dbMgr = DBConnectionManager.getInstance();
                     dbMgr.addConnectionProvider(dsNames[i], cp);
                 } else {
+                    // 默认连接池模式，走内部的池连接
                     String poolingProvider = pp.getStringProperty(PoolingConnectionProvider.POOLING_PROVIDER);
                     String dsDriver = pp.getStringProperty(PoolingConnectionProvider.DB_DRIVER);
                     String dsURL = pp.getStringProperty(PoolingConnectionProvider.DB_URL);
@@ -1027,10 +1057,9 @@ public class StdSchedulerFactory implements SchedulerFactory {
                     }
                     // we load even these "core" providers by class name in order to avoid a static dependency on
                     // the c3p0 and hikaricp libraries
-                    if(poolingProvider != null && poolingProvider.equals(PoolingConnectionProvider.POOLING_PROVIDER_HIKARICP)) {
+                    if (poolingProvider != null && poolingProvider.equals(PoolingConnectionProvider.POOLING_PROVIDER_HIKARICP)) {
                         cpClass = "org.quartz.utils.HikariCpPoolingConnectionProvider";
-                    }
-                    else {
+                    } else {
                         cpClass = "org.quartz.utils.C3p0PoolingConnectionProvider";
                     }
                     log.info("Using ConnectionProvider class '" + cpClass + "' for data source '" + dsNames[i] + "'");
@@ -1049,7 +1078,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
                         dbMgr.addConnectionProvider(dsNames[i], cp);
 
                         // Populate the underlying C3P0/HikariCP data source pool properties
-                        populateProviderWithExtraProps((PoolingConnectionProvider)cp, pp.getUnderlyingProperties());
+                        populateProviderWithExtraProps((PoolingConnectionProvider) cp, pp.getUnderlyingProperties());
                     } catch (Exception sqle) {
                         initException = new SchedulerException(
                                 "Could not initialize DataSource: " + dsNames[i],
@@ -1064,7 +1093,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
         // Set up any SchedulerPlugins
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+        // 设置插件
         String[] pluginNames = cfg.getPropertyGroups(PROP_PLUGIN_PREFIX);
         SchedulerPlugin[] plugins = new SchedulerPlugin[pluginNames.length];
         for (int i = 0; i < pluginNames.length; i++) {
@@ -1104,7 +1133,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
         // Set up any JobListeners
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        Class<?>[] strArg = new Class[] { String.class };
+        Class<?>[] strArg = new Class[]{String.class};
         String[] jobListenerNames = cfg.getPropertyGroups(PROP_JOB_LISTENER_PREFIX);
         JobListener[] jobListeners = new JobListener[jobListenerNames.length];
         for (int i = 0; i < jobListenerNames.length; i++) {
@@ -1122,7 +1151,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
             JobListener listener = null;
             try {
                 listener = (JobListener)
-                       loadHelper.loadClass(listenerClass).newInstance();
+                        loadHelper.loadClass(listenerClass).newInstance();
             } catch (Exception e) {
                 initException = new SchedulerException(
                         "JobListener class '" + listenerClass
@@ -1131,14 +1160,13 @@ public class StdSchedulerFactory implements SchedulerFactory {
             }
             try {
                 Method nameSetter = null;
-                try { 
+                try {
                     nameSetter = listener.getClass().getMethod("setName", strArg);
+                } catch (NoSuchMethodException ignore) {
+                    /* do nothing */
                 }
-                catch(NoSuchMethodException ignore) { 
-                    /* do nothing */ 
-                }
-                if(nameSetter != null) {
-                    nameSetter.invoke(listener, new Object[] {jobListenerNames[i] } );
+                if (nameSetter != null) {
+                    nameSetter.invoke(listener, new Object[]{jobListenerNames[i]});
                 }
                 setBeanProps(listener, lp);
             } catch (Exception e) {
@@ -1170,7 +1198,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
             TriggerListener listener = null;
             try {
                 listener = (TriggerListener)
-                       loadHelper.loadClass(listenerClass).newInstance();
+                        loadHelper.loadClass(listenerClass).newInstance();
             } catch (Exception e) {
                 initException = new SchedulerException(
                         "TriggerListener class '" + listenerClass
@@ -1179,12 +1207,11 @@ public class StdSchedulerFactory implements SchedulerFactory {
             }
             try {
                 Method nameSetter = null;
-                try { 
+                try {
                     nameSetter = listener.getClass().getMethod("setName", strArg);
-                }
-                catch(NoSuchMethodException ignore) { /* do nothing */ }
-                if(nameSetter != null) {
-                    nameSetter.invoke(listener, new Object[] {triggerListenerNames[i] } );
+                } catch (NoSuchMethodException ignore) { /* do nothing */ }
+                if (nameSetter != null) {
+                    nameSetter.invoke(listener, new Object[]{triggerListenerNames[i]});
                 }
                 setBeanProps(listener, lp);
             } catch (Exception e) {
@@ -1202,7 +1229,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
         // Get ThreadExecutor Properties
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+        // 设置线程执行器,默认使用DefaultThreadExecutor
         String threadExecutorClass = cfg.getStringProperty(PROP_THREAD_EXECUTOR_CLASS);
         if (threadExecutorClass != null) {
             tProps = cfg.getPropertyGroup(PROP_THREAD_EXECUTOR, true);
@@ -1222,65 +1249,70 @@ public class StdSchedulerFactory implements SchedulerFactory {
         }
 
 
-
         // Fire everything up
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         try {
-                
-    
+
+
             JobRunShellFactory jrsf = null; // Create correct run-shell factory...
-    
+
             if (userTXLocation != null) {
                 UserTransactionHelper.setUserTxLocation(userTXLocation);
             }
-    
+
+            // 判断是否带有事务
             if (wrapJobInTx) {
                 jrsf = new JTAJobRunShellFactory();
             } else {
                 jrsf = new JTAAnnotationAwareJobRunShellFactory();
             }
-    
+
+            // id生成方式
             if (autoId) {
                 try {
-                  schedInstId = DEFAULT_INSTANCE_ID;
-                  if (js.isClustered()) {
-                      schedInstId = instanceIdGenerator.generateInstanceId();
-                  }
+                    schedInstId = DEFAULT_INSTANCE_ID;
+                    // 集群模式生成id
+                    if (js.isClustered()) {
+                        schedInstId = instanceIdGenerator.generateInstanceId();
+                    }
                 } catch (Exception e) {
                     getLog().error("Couldn't generate instance Id!", e);
                     throw new IllegalStateException("Cannot run without an instance id.");
                 }
             }
 
+            // 使用terracotta 集群
             if (js.getClass().getName().startsWith("org.terracotta.quartz")) {
                 try {
                     String uuid = (String) js.getClass().getMethod("getUUID").invoke(js);
-                    if(schedInstId.equals(DEFAULT_INSTANCE_ID)) {
+                    if (schedInstId.equals(DEFAULT_INSTANCE_ID)) {
                         schedInstId = "TERRACOTTA_CLUSTERED,node=" + uuid;
                         if (jmxObjectName == null) {
                             jmxObjectName = QuartzSchedulerResources.generateJMXObjectName(schedName, schedInstId);
                         }
-                    } else if(jmxObjectName == null) {
+                    } else if (jmxObjectName == null) {
                         jmxObjectName = QuartzSchedulerResources.generateJMXObjectName(schedName, schedInstId + ",node=" + uuid);
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     throw new RuntimeException("Problem obtaining node id from TerracottaJobStore.", e);
                 }
 
-                if(null == cfg.getStringProperty(PROP_SCHED_JMX_EXPORT)) {
+                if (null == cfg.getStringProperty(PROP_SCHED_JMX_EXPORT)) {
                     jmxExport = true;
                 }
             }
-            
+
             if (js instanceof JobStoreSupport) {
-                JobStoreSupport jjs = (JobStoreSupport)js;
+                // 设置失败检查间隔和线程执行器
+                JobStoreSupport jjs = (JobStoreSupport) js;
                 jjs.setDbRetryInterval(dbFailureRetry);
-                if(threadsInheritInitalizersClassLoader)
+                if (threadsInheritInitalizersClassLoader)
                     jjs.setThreadsInheritInitializersClassLoadContext(threadsInheritInitalizersClassLoader);
-                
+
                 jjs.setThreadExecutor(threadExecutor);
             }
-    
+
+            // 设置调度器资源pojo
             QuartzSchedulerResources rsrcs = new QuartzSchedulerResources();
             rsrcs.setName(schedName);
             rsrcs.setThreadName(threadName);
@@ -1294,14 +1326,15 @@ public class StdSchedulerFactory implements SchedulerFactory {
             rsrcs.setInterruptJobsOnShutdownWithWait(interruptJobsOnShutdownWithWait);
             rsrcs.setJMXExport(jmxExport);
             rsrcs.setJMXObjectName(jmxObjectName);
-
+            // 设置rest服务
             if (managementRESTServiceEnabled) {
                 ManagementRESTServiceConfiguration managementRESTServiceConfiguration = new ManagementRESTServiceConfiguration();
                 managementRESTServiceConfiguration.setBind(managementRESTServiceHostAndPort);
                 managementRESTServiceConfiguration.setEnabled(managementRESTServiceEnabled);
                 rsrcs.setManagementRESTServiceConfiguration(managementRESTServiceConfiguration);
             }
-    
+
+            // rmi信息写入rsrcs
             if (rmiExport) {
                 rsrcs.setRMIRegistryHost(rmiHost);
                 rsrcs.setRMIRegistryPort(rmiPort);
@@ -1309,43 +1342,44 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 rsrcs.setRMICreateRegistryStrategy(rmiCreateRegistry);
                 rsrcs.setRMIBindName(rmiBindName);
             }
-    
+
             SchedulerDetailsSetter.setDetails(tp, schedName, schedInstId);
 
             rsrcs.setThreadExecutor(threadExecutor);
+            // 线程执行器初始化
             threadExecutor.initialize();
 
             rsrcs.setThreadPool(tp);
-            if(tp instanceof SimpleThreadPool) {
-                if(threadsInheritInitalizersClassLoader)
-                    ((SimpleThreadPool)tp).setThreadsInheritContextClassLoaderOfInitializingThread(threadsInheritInitalizersClassLoader);
+            if (tp instanceof SimpleThreadPool) {
+                if (threadsInheritInitalizersClassLoader)
+                    ((SimpleThreadPool) tp).setThreadsInheritContextClassLoaderOfInitializingThread(threadsInheritInitalizersClassLoader);
             }
             tp.initialize();
             tpInited = true;
-    
+            // 设置底层store
             rsrcs.setJobStore(js);
-    
+
             // add plugins
             for (int i = 0; i < plugins.length; i++) {
                 rsrcs.addSchedulerPlugin(plugins[i]);
             }
-    
+
             qs = new QuartzScheduler(rsrcs, idleWaitTime, dbFailureRetry);
             qsInited = true;
-    
+
             // Create Scheduler ref...
             Scheduler scheduler = instantiate(rsrcs, qs);
-    
+
             // set job factory if specified
-            if(jobFactory != null) {
+            if (jobFactory != null) {
                 qs.setJobFactory(jobFactory);
             }
-    
+
             // Initialize plugins now that we have a Scheduler instance.
             for (int i = 0; i < plugins.length; i++) {
                 plugins[i].initialize(pluginNames[i], scheduler, loadHelper);
             }
-    
+
             // add listeners
             for (int i = 0; i < jobListeners.length; i++) {
                 qs.getListenerManager().addJobListener(jobListeners[i], EverythingMatcher.allJobs());
@@ -1353,49 +1387,46 @@ public class StdSchedulerFactory implements SchedulerFactory {
             for (int i = 0; i < triggerListeners.length; i++) {
                 qs.getListenerManager().addTriggerListener(triggerListeners[i], EverythingMatcher.allTriggers());
             }
-    
+
             // set scheduler context data...
-            for(Object key: schedCtxtProps.keySet()) {
-                String val = schedCtxtProps.getProperty((String) key);    
-                scheduler.getContext().put((String)key, val);
+            for (Object key : schedCtxtProps.keySet()) {
+                String val = schedCtxtProps.getProperty((String) key);
+                scheduler.getContext().put((String) key, val);
             }
-    
+
             // fire up job store, and runshell factory
-    
+
             js.setInstanceId(schedInstId);
             js.setInstanceName(schedName);
             js.setThreadPoolSize(tp.getPoolSize());
             js.initialize(loadHelper, qs.getSchedulerSignaler());
 
             jrsf.initialize(scheduler);
-            
+
             qs.initialize();
-    
+
             getLog().info(
                     "Quartz scheduler '" + scheduler.getSchedulerName()
                             + "' initialized from " + propSrc);
-    
+
             getLog().info("Quartz scheduler version: " + qs.getVersion());
-    
+
             // prevents the repository from being garbage collected
             qs.addNoGCObject(schedRep);
             // prevents the db manager from being garbage collected
             if (dbMgr != null) {
                 qs.addNoGCObject(dbMgr);
             }
-    
+
             schedRep.bind(scheduler);
             return scheduler;
-        }
-        catch(SchedulerException e) {
+        } catch (SchedulerException e) {
             shutdownFromInstantiateException(tp, qs, tpInited, qsInited);
             throw e;
-        }
-        catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             shutdownFromInstantiateException(tp, qs, tpInited, qsInited);
             throw re;
-        }
-        catch(Error re) {
+        } catch (Error re) {
             shutdownFromInstantiateException(tp, qs, tpInited, qsInited);
             throw re;
         }
@@ -1427,9 +1458,9 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
     private void shutdownFromInstantiateException(ThreadPool tp, QuartzScheduler qs, boolean tpInited, boolean qsInited) {
         try {
-            if(qsInited)
+            if (qsInited)
                 qs.shutdown(false);
-            else if(tpInited)
+            else if (tpInited)
                 tp.shutdown(false);
         } catch (Exception e) {
             getLog().error("Got another exception while shutting down after instantiation exception", e);
@@ -1444,7 +1475,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
 
     private void setBeanProps(Object obj, Properties props)
-        throws NoSuchMethodException, IllegalAccessException,
+            throws NoSuchMethodException, IllegalAccessException,
             java.lang.reflect.InvocationTargetException,
             IntrospectionException, SchedulerConfigException {
         props.remove("class");
@@ -1471,19 +1502,18 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 Class<?>[] params = setMeth.getParameterTypes();
                 if (params.length != 1) {
                     throw new NoSuchMethodException(
-                        "No 1-argument setter for property '" + name + "'");
+                            "No 1-argument setter for property '" + name + "'");
                 }
-                
+
                 // does the property value reference another property's value? If so, swap to look at its value
                 PropertiesParser refProps = pp;
                 String refName = pp.getStringProperty(name);
-                if(refName != null && refName.startsWith("$@")) {
-                    refName =  refName.substring(2);
+                if (refName != null && refName.startsWith("$@")) {
+                    refName = refName.substring(2);
                     refProps = cfg;
-                }
-                else
+                } else
                     refName = name;
-                
+
                 if (params[0].equals(int.class)) {
                     setMeth.invoke(obj, new Object[]{Integer.valueOf(refProps.getIntProperty(refName))});
                 } else if (params[0].equals(long.class)) {
@@ -1509,7 +1539,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
     }
 
     private java.lang.reflect.Method getSetMethod(String name,
-            PropertyDescriptor[] props) {
+                                                  PropertyDescriptor[] props) {
         for (int i = 0; i < props.length; i++) {
             java.lang.reflect.Method wMeth = props[i].getWriteMethod();
 
@@ -1525,11 +1555,11 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
         try {
             ClassLoader cl = findClassloader();
-            if(cl != null)
+            if (cl != null)
                 return cl.loadClass(className);
             throw new SchedulerConfigException("Unable to find a class loader on the current thread or class.");
         } catch (ClassNotFoundException e) {
-            if(getClass().getClassLoader() != null)
+            if (getClass().getClassLoader() != null)
                 return getClass().getClassLoader().loadClass(className);
             throw e;
         }
@@ -1537,7 +1567,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
     private ClassLoader findClassloader() {
         // work-around set context loader for windows-service started jvms (QUARTZ-748)
-        if(Thread.currentThread().getContextClassLoader() == null && getClass().getClassLoader() != null) {
+        if (Thread.currentThread().getContextClassLoader() == null && getClass().getClassLoader() != null) {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         }
         return Thread.currentThread().getContextClassLoader();
@@ -1575,7 +1605,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 return sched;
             }
         }
-
+        // 实例化调度器
         sched = instantiate();
 
         return sched;

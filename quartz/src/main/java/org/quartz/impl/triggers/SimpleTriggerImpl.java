@@ -65,6 +65,9 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
      */
     private static final long serialVersionUID = -3735980074222850397L;
 
+    /*它的值是当前年份加上100
+
+     */
     private static final int YEAR_TO_GIVEUP_SCHEDULING_AT = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR) + 100;
     
     /*
@@ -79,16 +82,34 @@ public class SimpleTriggerImpl extends AbstractTrigger<SimpleTrigger> implements
 
     private Date endTime = null;
 
+    /**
+     * 下一次触发时间
+     */
     private Date nextFireTime = null;
 
+    /**
+     * 上一次触发时间
+     */
     private Date previousFireTime = null;
 
+    /**
+     * 重复次数
+     */
     private int repeatCount = 0;
 
+    /**
+     * 重复间隔
+     */
     private long repeatInterval = 0;
 
+    /**
+     * 触发次数
+     */
     private int timesTriggered = 0;
 
+    /**
+     * 是否已经完成
+     */
     private boolean complete = false;
 
     /*

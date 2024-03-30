@@ -686,9 +686,11 @@ public abstract class JobStoreSupport implements JobStore, Constants {
     public void schedulerStarted() throws SchedulerException {
 
         if (isClustered()) {
+            // 集群管理线程
             clusterManagementThread = new ClusterManager();
             if(initializersLoader != null)
                 clusterManagementThread.setContextClassLoader(initializersLoader);
+            // 管理线程初始化
             clusterManagementThread.initialize();
         } else {
             try {
@@ -1386,7 +1388,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
     
     protected JobDetail retrieveJob(Connection conn, JobKey key) throws JobPersistenceException {
         try {
-
+            // 组装jobDetail
             return getDelegate().selectJobDetail(conn, key,
                     getClassLoadHelper());
         } catch (ClassNotFoundException e) {
@@ -2982,6 +2984,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
                         TriggerFiredResult result;
                         for (OperableTrigger trigger : triggers) {
                             try {
+                                // 执行trigger然后获取结果
                               TriggerFiredBundle bundle = triggerFired(conn, trigger);
                               result = new TriggerFiredResult(bundle);
                             } catch (JobPersistenceException jpe) {
@@ -3002,6 +3005,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
                             List<FiredTriggerRecord> acquired = getDelegate().selectInstancesFiredTriggerRecords(conn, getInstanceId());
                             Set<String> executingTriggers = new HashSet<String>();
                             for (FiredTriggerRecord ft : acquired) {
+                                // 执行中的trigger
                                 if (STATE_EXECUTING.equals(ft.getFireInstanceState())) {
                                     executingTriggers.add(ft.getFireInstanceId());
                                 }
@@ -3038,11 +3042,13 @@ public abstract class JobStoreSupport implements JobStore, Constants {
         }
 
         try {
+            // 从数据库中获取job信息
             job = retrieveJob(conn, trigger.getJobKey());
             if (job == null) { return null; }
         } catch (JobPersistenceException jpe) {
             try {
                 getLog().error("Error retrieving job, setting trigger state to ERROR.", jpe);
+                // 设置error状态
                 getDelegate().updateTriggerState(conn, trigger.getKey(),
                         STATE_ERROR);
             } catch (SQLException sqle) {
@@ -3052,11 +3058,13 @@ public abstract class JobStoreSupport implements JobStore, Constants {
         }
 
         if (trigger.getCalendarName() != null) {
+            // 取出trigger对应的调度日历
             cal = retrieveCalendar(conn, trigger.getCalendarName());
             if (cal == null) { return null; }
         }
 
         try {
+            // 变更状态为执行中
             getDelegate().updateFiredTrigger(conn, trigger, STATE_EXECUTING, job);
         } catch (SQLException e) {
             throw new JobPersistenceException("Couldn't insert fired trigger: "
@@ -3068,10 +3076,12 @@ public abstract class JobStoreSupport implements JobStore, Constants {
         // call triggered - to update the trigger's next-fire-time state...
         trigger.triggered(cal);
 
+        // 等待执行状态
         String state = STATE_WAITING;
         boolean force = true;
         
         if (job.isConcurrentExectionDisallowed()) {
+            // 禁止并发状态
             state = STATE_BLOCKED;
             force = false;
             try {
@@ -3093,6 +3103,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             force = true;
         }
 
+        //TODO
         storeTrigger(conn, trigger, job, true, state, force, false);
 
         job.getJobDataMap().clearDirtyFlag();
@@ -3850,19 +3861,21 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             if (lockName != null) {
                 // If we aren't using db locks, then delay getting DB connection 
                 // until after acquiring the lock since it isn't needed.
+                // 获取链接
                 if (getLockHandler().requiresConnection()) {
                     conn = getNonManagedTXConnection();
                 }
-                
+                // 获取TRIGGER_ACCESS锁 或  ....锁
                 transOwner = getLockHandler().obtainLock(conn, lockName);
             }
             
             if (conn == null) {
                 conn = getNonManagedTXConnection();
             }
-            
+            // 执行回调
             final T result = txCallback.execute(conn);
             try {
+                // 提交事务
                 commitConnection(conn);
             } catch (JobPersistenceException e) {
                 rollbackConnection(conn);
@@ -3877,6 +3890,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             }
 
             Long sigTime = clearAndGetSignalSchedulingChangeOnTxCompletion();
+            // TODO
             if(sigTime != null && sigTime >= 0) {
                 signalSchedulingChangeImmediately(sigTime);
             }
@@ -3890,6 +3904,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             throw new JobPersistenceException("Unexpected runtime exception: "
                     + e.getMessage(), e);
         } finally {
+            // 释放分布式锁并清理当前连接
             try {
                 releaseLock(lockName, transOwner);
             } finally {
@@ -3996,6 +4011,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
         }
 
         public void initialize() {
+            // 委托帮忙执行
             ThreadExecutor executor = getThreadExecutor();
             executor.execute(MisfireHandler.this);
         }
@@ -4009,6 +4025,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             try {
                 getLog().debug("MisfireHandler: scanning for misfires...");
 
+                // TODO 恢复错过的JOB
                 RecoverMisfiredJobsResult res = doRecoverMisfires();
                 numFails = 0;
                 return res;
@@ -4032,6 +4049,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
 
                 RecoverMisfiredJobsResult recoverMisfiredJobsResult = manage();
 
+                // 执行次数【不论成功还是失败】 >0
                 if (recoverMisfiredJobsResult.getProcessedMisfiredTriggerCount() > 0) {
                     signalSchedulingChangeImmediately(recoverMisfiredJobsResult.getEarliestNewTime());
                 }
@@ -4039,6 +4057,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
                 if (!shutdown) {
                     long timeToSleep = 50l;  // At least a short pause to help balance threads
                     if (!recoverMisfiredJobsResult.hasMoreMisfiredTriggers()) {
+                        //
                         timeToSleep = getMisfireThreshold() - (System.currentTimeMillis() - sTime);
                         if (timeToSleep <= 0) {
                             timeToSleep = 50l;

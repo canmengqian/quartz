@@ -47,16 +47,20 @@ public class TriggerFiredBundle implements java.io.Serializable {
     private JobDetail job;
 
     private OperableTrigger trigger;
-
+    // 日历
     private Calendar cal;
 
     private boolean jobIsRecovering;
 
+    // 执行时间
     private Date fireTime;
 
+    // 调度开始时间
     private Date scheduledFireTime;
 
+    // 上一次执行时间
     private Date prevFireTime;
+    // 下一次执行时间
 
     private Date nextFireTime;
 

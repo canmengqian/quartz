@@ -64,8 +64,14 @@ public interface ThreadPool {
      *
      * @return true, if the runnable was assigned to run on a Thread.
      */
+    /*
+     * 运行给定的线程
+     */
     boolean runInThread(Runnable runnable);
 
+    /**
+     * 返回可用的线程数
+     */
     /**
      * <p>
      * Determines the number of threads that are currently available in in
@@ -92,6 +98,7 @@ public interface ThreadPool {
     void initialize() throws SchedulerConfigException;
 
     /**
+     * 由 QuartzScheduler进行调度，通知进行关闭
      * <p>
      * Called by the QuartzScheduler to inform the <code>ThreadPool</code>
      * that it should free up all of it's resources because the scheduler is
@@ -101,10 +108,17 @@ public interface ThreadPool {
     void shutdown(boolean waitForJobsToComplete);
 
     /**
+     * 获取线程池大小
+     */
+    /**
      * <p>Get the current number of threads in the <code>ThreadPool</code>.</p>
      */
     int getPoolSize();
 
+    /**
+     * 设置线程池id
+     *
+     */
     /**
      * <p>Inform the <code>ThreadPool</code> of the Scheduler instance's Id,
      * prior to initialize being invoked.</p>
@@ -112,6 +126,9 @@ public interface ThreadPool {
      * @since 1.7
      */
     void setInstanceId(String schedInstId);
+    /**
+     * 设置线程池实例名称
+     */
 
     /**
      * <p>Inform the <code>ThreadPool</code> of the Scheduler instance's name,

@@ -31,6 +31,16 @@ import org.quartz.spi.TriggerFiredBundle;
  * 
  * @author James House
  */
+
+/**
+ * JobRunShellFactory 在 Quartz 定时任务框架中扮演着关键角色，它的主要作用是负责创建 JobRunShell 对象。以下是它的具体功能：
+ * 创建Job执行容器：当 Quartz 调度器确定某个 Job 应该被执行时，它需要一个能够封装 Job 执行上下文和处理运行时逻辑的对象，这个对象就是由 JobRunShellFactory 创建的 JobRunShell。
+ * 封装运行时环境：JobRunShell 提供了执行 Job 时的安全环境，它可以管理与 Job 执行相关的资源，如线程、事务等，并确保即使在多线程环境下也能正确地执行和完成 Job。
+ * 异常处理：在 JobRunShell 中，会捕获 Job 执行过程中可能抛出的异常，进行适当的处理，并确保调度器的状态得到正确的更新。
+ * 初始化上下文：JobRunShell 实例化时会构造 JobExecutionContext，这个上下文对象包含了 Job 执行所需的所有相关信息，并作为参数传递给 Job 的 execute 方法。
+ * 集成外部服务：通过自定义的 JobRunShellFactory 实现，开发者还可以灵活地集成诸如事务管理、安全管理或其他框架服务到 Job 的执行过程中。
+ * 总之，JobRunShellFactory 是 Quartz 框架用于生产执行 Job 所需运行环境的工厂类，是连接调度逻辑与实际业务逻辑执行的关键桥梁
+ */
 public interface JobRunShellFactory {
 
     /*
