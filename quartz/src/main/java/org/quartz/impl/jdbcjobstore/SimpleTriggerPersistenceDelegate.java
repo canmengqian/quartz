@@ -47,6 +47,13 @@ public class SimpleTriggerPersistenceDelegate implements TriggerPersistenceDeleg
         return ((trigger instanceof SimpleTriggerImpl) && !((SimpleTriggerImpl)trigger).hasAdditionalProperties());
     }
 
+    /**
+     * 删除简单触发器的属性
+     * @param conn
+     * @param triggerKey
+     * @return
+     * @throws SQLException
+     */
     public int deleteExtendedTriggerProperties(Connection conn, TriggerKey triggerKey) throws SQLException {
         PreparedStatement ps = null;
 
@@ -60,6 +67,17 @@ public class SimpleTriggerPersistenceDelegate implements TriggerPersistenceDeleg
             Util.closeStatement(ps);
         }
     }
+
+    /**
+     * 插入简单触发器的属性
+     * @param conn
+     * @param trigger
+     * @param state
+     * @param jobDetail
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
 
     public int insertExtendedTriggerProperties(Connection conn, OperableTrigger trigger, String state, JobDetail jobDetail) throws SQLException, IOException {
 
@@ -81,6 +99,13 @@ public class SimpleTriggerPersistenceDelegate implements TriggerPersistenceDeleg
         }
     }
 
+    /**
+     * 查找简单触发器
+     * @param conn
+     * @param triggerKey
+     * @return
+     * @throws SQLException
+     */
     public TriggerPropertyBundle loadExtendedTriggerProperties(Connection conn, TriggerKey triggerKey) throws SQLException {
 
         PreparedStatement ps = null;
@@ -114,6 +139,16 @@ public class SimpleTriggerPersistenceDelegate implements TriggerPersistenceDeleg
         }
     }
 
+    /**
+     * 更新简单触发器
+     * @param conn
+     * @param trigger
+     * @param state
+     * @param jobDetail
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
     public int updateExtendedTriggerProperties(Connection conn, OperableTrigger trigger, String state, JobDetail jobDetail) throws SQLException, IOException {
 
         SimpleTrigger simpleTrigger = (SimpleTrigger)trigger;

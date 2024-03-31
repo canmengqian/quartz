@@ -19,8 +19,10 @@ import org.quartz.impl.matchers.EverythingMatcher;
 
 public class ListenerManagerImpl implements ListenerManager {
 
+    // 全局作业监听器
     private Map<String, JobListener> globalJobListeners = new LinkedHashMap<String, JobListener>(10);
 
+    // 全局触发器监听器
     private Map<String, TriggerListener> globalTriggerListeners = new LinkedHashMap<String, TriggerListener>(10);
 
     private Map<String, List<Matcher<JobKey>>> globalJobListenersMatchers = new LinkedHashMap<String, List<Matcher<JobKey>>>(10);

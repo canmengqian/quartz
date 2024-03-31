@@ -47,6 +47,10 @@ public interface StdJDBCConstants extends Constants {
     String SCHED_NAME_SUBST = "{1}";
 
     // QUERIES
+    /**
+     * SQL:UPDATE TRIGGERS SET TRIGGER_STATE = ? WHERE  SCHEDULER_NAME = ? AND
+     * (TRIGGER_STATE = ? OR TRIGGER_STATE = ? )
+     */
     String UPDATE_TRIGGER_STATES_FROM_OTHER_STATES = "UPDATE "
             + TABLE_PREFIX_SUBST
             + TABLE_TRIGGERS
@@ -60,6 +64,12 @@ public interface StdJDBCConstants extends Constants {
             + " = ? OR "
             + COL_TRIGGER_STATE + " = ?)";
 
+    /**
+     * SQL: SELECT * FROM TRIGGERS WHERE SCHEDULER_NAME = ?
+     * AND NOT (MISFIRE_INSTRUCTION = ?)
+     * AND NEXT_FIRE_TIME < ?
+     * ORDER BY NEXT_FIRE_TIME ASC, PRIORITY DESC
+     */
     String SELECT_MISFIRED_TRIGGERS = "SELECT * FROM "
         + TABLE_PREFIX_SUBST + TABLE_TRIGGERS + " WHERE "
         + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
@@ -67,13 +77,22 @@ public interface StdJDBCConstants extends Constants {
         + COL_MISFIRE_INSTRUCTION + " = " + Trigger.MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY + ") AND " 
         + COL_NEXT_FIRE_TIME + " < ? "
         + "ORDER BY " + COL_NEXT_FIRE_TIME + " ASC, " + COL_PRIORITY + " DESC";
-    
+
+    /**
+     * SQL: SELECT TRIGGER_NAME, TRIGGER_GROUP FROM TRIGGERS WHERE
+     * SCHEDULER_NAME = ? AND TRIGGER_STATE = ?
+     */
     String SELECT_TRIGGERS_IN_STATE = "SELECT "
             + COL_TRIGGER_NAME + ", " + COL_TRIGGER_GROUP + " FROM "
             + TABLE_PREFIX_SUBST + TABLE_TRIGGERS + " WHERE "
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST + " AND "
             + COL_TRIGGER_STATE + " = ?";
 
+    /**
+     * SQL: SELECT TRIGGER_NAME, TRIGGER_GROUP FROM TRIGGERS WHERE
+     * SCHEDULER_NAME = ? AND NOT (MISFIRE_INSTRUCTION = -1) AND TRIGGER_STATE = ? AND NEXT_FIRE_TIME < ?
+     * ORDER BY NEXT_FIRE_TIME ASC, PRIORITY DESC
+     */
     String SELECT_MISFIRED_TRIGGERS_IN_STATE = "SELECT "
         + COL_TRIGGER_NAME + ", " + COL_TRIGGER_GROUP + " FROM "
         + TABLE_PREFIX_SUBST + TABLE_TRIGGERS + " WHERE "
@@ -215,6 +234,10 @@ public interface StdJDBCConstants extends Constants {
             + ", " + COL_MISFIRE_INSTRUCTION + ", " + COL_JOB_DATAMAP + ", " + COL_PRIORITY + ") "
             + " VALUES(" + SCHED_NAME_SUBST + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+    /**
+     * SQL: Insert INTO table_simple_triggers (sched_name, trigger_name, trigger_group,
+     * repeat_count, repeat_interval, times_triggered)
+     */
     String INSERT_SIMPLE_TRIGGER = "INSERT INTO "
             + TABLE_PREFIX_SUBST + TABLE_SIMPLE_TRIGGERS + " ("
             + COL_SCHEDULER_NAME + ", "
@@ -259,7 +282,12 @@ public interface StdJDBCConstants extends Constants {
         + COL_JOB_DATAMAP + " = ? WHERE " 
         + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
         + " AND " + COL_TRIGGER_NAME + " = ? AND " + COL_TRIGGER_GROUP + " = ?";
-    
+
+    /**
+     * SQL: Update simple_triggers SET repeat_count = ?, repeat_interval = ?,
+     * times_triggered = ? WHERE trigger_name = ? AND trigger_group = ?
+     *
+     */
     String UPDATE_SIMPLE_TRIGGER = "UPDATE "
             + TABLE_PREFIX_SUBST + TABLE_SIMPLE_TRIGGERS + " SET "
             + COL_REPEAT_COUNT + " = ?, " + COL_REPEAT_INTERVAL + " = ?, "
@@ -354,6 +382,9 @@ public interface StdJDBCConstants extends Constants {
             + COL_JOB_GROUP
             + " = ? AND " + COL_TRIGGER_STATE + " = ?";
 
+    /*
+     * DELETE FROM SIMPLE_TRIGGERS WHERE TRIGGER_NAME = ? AND TRIGGER_GROUP = ?
+     */
     String DELETE_SIMPLE_TRIGGER = "DELETE FROM "
             + TABLE_PREFIX_SUBST + TABLE_SIMPLE_TRIGGERS + " WHERE "
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
@@ -415,6 +446,9 @@ public interface StdJDBCConstants extends Constants {
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_TRIGGER_NAME + " = ? AND " + COL_TRIGGER_GROUP + " = ?";
 
+    /*
+     * SELECT * FROM SIMPLE_TRIGGERS WHERE TRIGGER_NAME = ? AND TRIGGER_GROUP = ?
+     */
     String SELECT_SIMPLE_TRIGGER = "SELECT *" + " FROM "
             + TABLE_PREFIX_SUBST + TABLE_SIMPLE_TRIGGERS + " WHERE "
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
@@ -547,6 +581,9 @@ public interface StdJDBCConstants extends Constants {
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_INSTANCE_NAME + " = ? AND " + COL_REQUESTS_RECOVERY + " = ?";
 
+    /**
+     * SQL: SELECT COUNT(TRIGGER_NAME) FROM FIRED_TRIGGERS WHERE JOB_NAME = ? AND JOB_GROUP = ?";
+     */
     String SELECT_JOB_EXECUTION_COUNT = "SELECT COUNT("
             + COL_TRIGGER_NAME + ") FROM " + TABLE_PREFIX_SUBST
             + TABLE_FIRED_TRIGGERS + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
@@ -579,6 +616,9 @@ public interface StdJDBCConstants extends Constants {
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_JOB_GROUP + " = ?";
 
+    /**
+     * SQL: DELETE FROM FIRED_TRIGGERS  WHERE SCHEDULER_NAME = ? AND ENTRY_ID = ?";
+     */
     String DELETE_FIRED_TRIGGER = "DELETE FROM "
             + TABLE_PREFIX_SUBST + TABLE_FIRED_TRIGGERS + " WHERE "
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
@@ -610,13 +650,18 @@ public interface StdJDBCConstants extends Constants {
             + TABLE_PREFIX_SUBST
             + TABLE_FIRED_TRIGGERS
             + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST;
-    
+    /**
+     * SQL: INSERT INTO SCHEDULER_STATE (SCHEDULER_NAME, INSTANCE_NAME, LAST_CHECKIN_TIME, CHECKIN_INTERVAL) VALUES(?, ?, ?, ?)
+     */
     String INSERT_SCHEDULER_STATE = "INSERT INTO "
             + TABLE_PREFIX_SUBST + TABLE_SCHEDULER_STATE + " ("
             + COL_SCHEDULER_NAME + ", "
             + COL_INSTANCE_NAME + ", " + COL_LAST_CHECKIN_TIME + ", "
             + COL_CHECKIN_INTERVAL + ") VALUES(" + SCHED_NAME_SUBST + ", ?, ?, ?)";
 
+    /**
+     * SQL: SELECT * FROM SCHEDULER_STATE WHERE SCHEDULER_NAME = ? AND INSTANCE_NAME = ?
+     */
     String SELECT_SCHEDULER_STATE = "SELECT * FROM "
             + TABLE_PREFIX_SUBST + TABLE_SCHEDULER_STATE + " WHERE "
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
@@ -626,11 +671,18 @@ public interface StdJDBCConstants extends Constants {
             + TABLE_PREFIX_SUBST + TABLE_SCHEDULER_STATE
             + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST;
 
+    /**
+     * SQL: DELETE FROM SCHEDULER_STATE WHERE SCHEDULER_NAME = ? AND INSTANCE_NAME = ?
+     */
     String DELETE_SCHEDULER_STATE = "DELETE FROM "
         + TABLE_PREFIX_SUBST + TABLE_SCHEDULER_STATE + " WHERE "
         + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
         + " AND " + COL_INSTANCE_NAME + " = ?";
 
+    /**
+     * 更新调度器最后检查时间
+     * SQL: UPDATE qrtz_scheduler_state SET last_checkin_time = ? WHERE scheduler_name = ? AND instance_name = ?
+     */
     String UPDATE_SCHEDULER_STATE = "UPDATE "
         + TABLE_PREFIX_SUBST + TABLE_SCHEDULER_STATE + " SET " 
         + COL_LAST_CHECKIN_TIME + " = ? WHERE "
@@ -648,6 +700,9 @@ public interface StdJDBCConstants extends Constants {
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_TRIGGER_GROUP + " = ?";
 
+    /**
+     * SQL: SELECT * FROM qrtz_paused_trigger_grps where scheduler_name = ?;
+     */
     String SELECT_PAUSED_TRIGGER_GROUPS = "SELECT "
         + COL_TRIGGER_GROUP + " FROM " + TABLE_PREFIX_SUBST
         + TABLE_PAUSED_TRIGGERS

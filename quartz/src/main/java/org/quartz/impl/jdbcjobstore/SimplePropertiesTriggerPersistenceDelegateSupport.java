@@ -52,17 +52,31 @@ public abstract class SimplePropertiesTriggerPersistenceDelegateSupport implemen
     protected static final String COL_DEC_PROP_2 = "DEC_PROP_2";
     protected static final String COL_BOOL_PROP_1 = "BOOL_PROP_1";
     protected static final String COL_BOOL_PROP_2 = "BOOL_PROP_2";
-    
+
+    /**
+     * SQL: SELECT * FROM SIMPROP_TRIGGERS WHERE SCHED_NAME = ?
+     * AND TRIGGER_NAME = ? AND TRIGGER_GROUP = ?
+     */
     protected static final String SELECT_SIMPLE_PROPS_TRIGGER = "SELECT *" + " FROM "
         + TABLE_PREFIX_SUBST + TABLE_SIMPLE_PROPERTIES_TRIGGERS + " WHERE "
         + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
         + " AND " + COL_TRIGGER_NAME + " = ? AND " + COL_TRIGGER_GROUP + " = ?";
 
+    /**
+     * SQL: DELETE FROM SIMPROP_TRIGGERS WHERE SCHED_NAME = ?
+     * AND TRIGGER_NAME = ? AND TRIGGER_GROUP = ?
+     */
     protected static final String DELETE_SIMPLE_PROPS_TRIGGER = "DELETE FROM "
         + TABLE_PREFIX_SUBST + TABLE_SIMPLE_PROPERTIES_TRIGGERS + " WHERE "
         + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
         + " AND " + COL_TRIGGER_NAME + " = ? AND " + COL_TRIGGER_GROUP + " = ?";
 
+    /**
+     * SQL: INSERT INTO SIMPROP_TRIGGERS (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP,
+     * STR_PROP_1, STR_PROP_2, STR_PROP_3, INT_PROP_1, INT_PROP_2, LONG_PROP_1,
+     * LONG_PROP_2, DEC_PROP_1, DEC_PROP_2, BOOL_PROP_1, BOOL_PROP_2)
+     * VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     */
     protected static final String INSERT_SIMPLE_PROPS_TRIGGER = "INSERT INTO "
         + TABLE_PREFIX_SUBST + TABLE_SIMPLE_PROPERTIES_TRIGGERS + " ("
         + COL_SCHEDULER_NAME + ", "
@@ -74,6 +88,12 @@ public abstract class SimplePropertiesTriggerPersistenceDelegateSupport implemen
         + COL_BOOL_PROP_1 + ", " + COL_BOOL_PROP_2 
         + ") " + " VALUES(" + SCHED_NAME_SUBST + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+    /**
+     * SQL: UPDATE SIMPROP_TRIGGERS SET STR_PROP_1 = ?, STR_PROP_2 = ?, STR_PROP_3 = ?,
+     * INT_PROP_1 = ?, INT_PROP_2 = ?, LONG_PROP_1 = ?, LONG_PROP_2 = ?, DEC_PROP_1 = ?,
+     * DEC_PROP_2 = ?, BOOL_PROP_1 = ?, BOOL_PROP_2 = ?
+     * WHERE SCHED_NAME = ? AND TRIGGER_NAME = ? AND TRIGGER_GROUP = ?
+     */
     protected static final String UPDATE_SIMPLE_PROPS_TRIGGER = "UPDATE "
         + TABLE_PREFIX_SUBST + TABLE_SIMPLE_PROPERTIES_TRIGGERS + " SET "
         + COL_STR_PROP_1 + " = ?, " + COL_STR_PROP_2 + " = ?, " + COL_STR_PROP_3 + " = ?, "

@@ -37,7 +37,7 @@ public interface Constants {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
-    // Table names
+    // Table names 表名称
     String TABLE_JOB_DETAILS = "JOB_DETAILS";
 
     String TABLE_TRIGGERS = "TRIGGERS";
@@ -58,7 +58,7 @@ public interface Constants {
 
     String TABLE_SCHEDULER_STATE = "SCHEDULER_STATE";
 
-    // TABLE_JOB_DETAILS columns names
+    // TABLE_JOB_DETAILS columns names 表字段
     
     String COL_SCHEDULER_NAME = "SCHED_NAME";
     
@@ -70,10 +70,11 @@ public interface Constants {
 
     String COL_IS_VOLATILE = "IS_VOLATILE";
 
-    String COL_IS_NONCONCURRENT = "IS_NONCONCURRENT";
+    String COL_IS_NONCONCURRENT = "IS_NONCONCURRENT"; // 是否是并发处理
 
     String COL_IS_UPDATE_DATA = "IS_UPDATE_DATA";
 
+    // TODO
     String COL_REQUESTS_RECOVERY = "REQUESTS_RECOVERY";
 
     String COL_JOB_DATAMAP = "JOB_DATA";
@@ -139,15 +140,16 @@ public interface Constants {
     // TABLE_LOCKS columns names
     String COL_LOCK_NAME = "LOCK_NAME";
 
-    // TABLE_LOCKS columns names
+    // TABLE_LOCKS columns names 上次检查时间
     String COL_LAST_CHECKIN_TIME = "LAST_CHECKIN_TIME";
 
+    // 检查间隔
     String COL_CHECKIN_INTERVAL = "CHECKIN_INTERVAL";
 
     // MISC CONSTANTS
     String DEFAULT_TABLE_PREFIX = "QRTZ_";
 
-    // STATES
+    // STATES TRIGGER 触发器状态
     String STATE_WAITING = "WAITING";
 
     String STATE_ACQUIRED = "ACQUIRED";
@@ -176,7 +178,7 @@ public interface Constants {
 
     String ALL_GROUPS_PAUSED = "_$_ALL_GROUPS_PAUSED_$_";
 
-    // TRIGGER TYPES
+    // TRIGGER TYPES 触发器类型
     /** Simple Trigger type. */
     String TTYPE_SIMPLE = "SIMPLE";
 

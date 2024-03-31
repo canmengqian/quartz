@@ -90,14 +90,17 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
 
     protected String tablePrefix = DEFAULT_TABLE_PREFIX;
 
+    // instanceId
     protected String instanceId;
 
+    // Scheduler name
     protected String schedName;
 
     protected boolean useProperties;
     
     protected ClassLoadHelper classLoadHelper;
 
+    // TriggerPersistenceDelegate相关的SQL?
     protected List<TriggerPersistenceDelegate> triggerPersistenceDelegates = new LinkedList<TriggerPersistenceDelegate>();
 
     
@@ -169,9 +172,13 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     }
 
     protected void addDefaultTriggerPersistenceDelegates() {
+        // 添加简单的TriggerPersistenceDelegate
         addTriggerPersistenceDelegate(new SimpleTriggerPersistenceDelegate());
+        // 添加CronTriggerPersistenceDelegate
         addTriggerPersistenceDelegate(new CronTriggerPersistenceDelegate());
+        // 添加CalendarIntervalTriggerPersistenceDelegate
         addTriggerPersistenceDelegate(new CalendarIntervalTriggerPersistenceDelegate());
+        // 添加DailyTimeIntervalTriggerPersistenceDelegate
         addTriggerPersistenceDelegate(new DailyTimeIntervalTriggerPersistenceDelegate());
     }
 
@@ -180,12 +187,14 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     }
     
     public void addTriggerPersistenceDelegate(TriggerPersistenceDelegate delegate) {
+        // 添加自定义TriggerPersistenceDelegate
         logger.debug("Adding TriggerPersistenceDelegate of type: " + delegate.getClass().getCanonicalName());
         delegate.initialize(tablePrefix, schedName);
         this.triggerPersistenceDelegates.add(delegate);
     }
     
     public TriggerPersistenceDelegate findTriggerPersistenceDelegate(OperableTrigger trigger)  {
+        // 查找首个能够处理trigger类型的TriggerPersistenceDelegate
         for(TriggerPersistenceDelegate delegate: triggerPersistenceDelegates) {
             if(delegate.canHandleTriggerType(trigger))
                 return delegate;
@@ -195,6 +204,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     }
 
     public TriggerPersistenceDelegate findTriggerPersistenceDelegate(String discriminator)  {
+        // 查找首个能够处理trigger类型的TriggerPersistenceDelegate
         for(TriggerPersistenceDelegate delegate: triggerPersistenceDelegates) {
             if(delegate.getHandledTriggerTypeDiscriminator().equals(discriminator))
                 return delegate;
@@ -208,6 +218,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     //---------------------------------------------------------------------------
 
     /**
+     * 更新触发器状态
      * <p>
      * Insert the job detail record.
      * </p>
@@ -240,6 +251,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     }
 
     /**
+     * 获取错过执行的触发器
      * <p>
      * Get the names of all of the triggers that have misfired.
      * </p>
@@ -261,6 +273,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
 
             LinkedList<TriggerKey> list = new LinkedList<TriggerKey>();
             while (rs.next()) {
+                // 获取触发器名称和组名
                 String triggerName = rs.getString(COL_TRIGGER_NAME);
                 String groupName = rs.getString(COL_TRIGGER_GROUP);
                 list.add(triggerKey(triggerName, groupName));
@@ -273,6 +286,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     }
 
     /**
+     * 按照 状态获取触发器
      * <p>
      * Select all of the triggers in a given state.
      * </p>
@@ -305,6 +319,18 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
         }
     }
 
+    /**
+     * 获取错过执行的和指定状态的触发器
+     * <p>
+     * Select all of the triggers in a given state that have misfired.
+     * </p>
+     *
+     * @param conn
+     *          the DB Connection
+     * @param state
+     *          the state the triggers must be in
+     * @return an array of trigger <code>Key</code> s
+     */
     public List<TriggerKey> selectMisfiredTriggersInState(Connection conn, String state,
             long ts) throws SQLException {
         PreparedStatement ps = null;
@@ -2896,6 +2922,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     }
     
     /**
+     * 删除被调度的TRIGGER
      * <p>
      * Delete a fired trigger.
      * </p>
@@ -2919,6 +2946,15 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
         }
     }
 
+    /**
+     * 获取作业被调度的次数
+     * @param conn
+     *          the DB Connection
+     *
+     * @param jobKey
+     * @return
+     * @throws SQLException
+     */
     public int selectJobExecutionCount(Connection conn, JobKey jobKey) throws SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -2936,7 +2972,17 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
             closeStatement(ps);
         }
     }
-    
+
+    /**
+     * 写入调度器状态
+     * @param conn
+     *          the DB Connection
+     * @param theInstanceId
+     * @param checkInTime
+     * @param interval
+     * @return
+     * @throws SQLException
+     */
     public int insertSchedulerState(Connection conn, String theInstanceId,
             long checkInTime, long interval)
         throws SQLException {
@@ -2953,6 +2999,14 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
         }
     }
 
+    /**
+     * 删除调度器状态
+     * @param conn
+     *          the DB Connection
+     * @param theInstanceId
+     * @return
+     * @throws SQLException
+     */
     public int deleteSchedulerState(Connection conn, String theInstanceId)
         throws SQLException {
         PreparedStatement ps = null;
@@ -2966,6 +3020,15 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
         }
     }
 
+    /**
+     * 更新调度器最后检查时间
+     * @param conn
+     *          the DB Connection
+     * @param theInstanceId
+     * @param checkInTime
+     * @return
+     * @throws SQLException
+     */
     public int updateSchedulerState(Connection conn, String theInstanceId, long checkInTime)
         throws SQLException {
         PreparedStatement ps = null;
@@ -2979,7 +3042,15 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
             closeStatement(ps);
         }
     }
-        
+
+    /**
+     * 获取调度器状态
+     * @param conn
+     *          the DB Connection
+     * @param theInstanceId
+     * @return
+     * @throws SQLException
+     */
     public List<SchedulerStateRecord> selectSchedulerStateRecords(Connection conn, String theInstanceId)
         throws SQLException {
         PreparedStatement ps = null;
@@ -3032,6 +3103,11 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     }
 
     private String schedNameLiteral = null;
+
+    /**
+     * 调度器的名称,带有单引号
+     * @return
+     */
     protected String getSchedulerNameLiteral() {
         if(schedNameLiteral == null)
             schedNameLiteral = "'" + schedName + "'";
@@ -3118,6 +3194,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     }
     
     /**
+     * map序列化为字节流
      * serialize the java.util.Properties
      */
     private ByteArrayOutputStream serializeProperties(JobDataMap data)
@@ -3139,6 +3216,7 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
     }
 
     /**
+     * map对象转属性
      * convert the JobDataMap into a list of properties
      */
     protected Properties convertToProperty(Map<?, ?> data) throws IOException {
@@ -3243,7 +3321,8 @@ public class StdJDBCDelegate implements DriverDelegate, StdJDBCConstants {
         return getObjectFromBlob(rs, colName);
     }
 
-    /** 
+    /**
+     * 获取指定调度器下所有暂停的触发器
      * @see org.quartz.impl.jdbcjobstore.DriverDelegate#selectPausedTriggerGroups(java.sql.Connection)
      */
     public Set<String> selectPausedTriggerGroups(Connection conn) throws SQLException {

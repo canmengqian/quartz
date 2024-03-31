@@ -850,7 +850,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
         if (jobDetail.getJobClass() == null) {
             throw new SchedulerException("Job's class cannot be null");
         }
-        
+        // 转化为
         OperableTrigger trig = (OperableTrigger)trigger;
 
         if (trigger.getJobKey() == null) {
@@ -859,6 +859,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
             throw new SchedulerException(
                 "Trigger does not reference given job!");
         }
+        // 验证触发器合理性
 
         trig.validate();
 
@@ -866,6 +867,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
         if (trigger.getCalendarName() != null) {
             cal = resources.getJobStore().retrieveCalendar(trigger.getCalendarName());
         }
+        // 计算触发器第一次执行时间
         Date ft = trig.computeFirstFireTime(cal);
 
         if (ft == null) {
@@ -873,9 +875,13 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
                     "Based on configured schedule, the given trigger '" + trigger.getKey() + "' will never fire.");
         }
 
+        // 存储JOB和 TRIGGER
         resources.getJobStore().storeJobAndTrigger(jobDetail, trig);
+        // 通知监听器JOB已经添加
         notifySchedulerListenersJobAdded(jobDetail);
+        // 通知调度线程
         notifySchedulerThread(trigger.getNextFireTime().getTime());
+        // 通知监听器触发器已经添加
         notifySchedulerListenersSchduled(trigger);
 
         return ft;
@@ -919,6 +925,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
                     "Based on configured schedule, the given trigger '" + trigger.getKey() + "' will never fire.");
         }
 
+        // 存储触发器
         resources.getJobStore().storeTrigger(trig, false);
         notifySchedulerThread(trigger.getNextFireTime().getTime());
         notifySchedulerListenersSchduled(trigger);
@@ -955,7 +962,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
             throw new SchedulerException(
                     "Jobs added with no trigger must be durable.");
         }
-
+        // 存储JOB
         resources.getJobStore().storeJob(jobDetail, replace);
         notifySchedulerThread(0L);
         notifySchedulerListenersJobAdded(jobDetail);
@@ -975,9 +982,10 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
         validateState();
 
         boolean result = false;
-        
+        // 获取JOB关联的触发器
         List<? extends Trigger> triggers = getTriggersOfJob(jobKey);
         for (Trigger trigger : triggers) {
+            // 卸载触发器和JOB间的关系
             if (!unscheduleJob(trigger.getKey())) {
                 StringBuilder sb = new StringBuilder().append(
                         "Unable to unschedule trigger [").append(
@@ -1011,7 +1019,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
     public void scheduleJobs(Map<JobDetail, Set<? extends Trigger>> triggersAndJobs, boolean replace)  throws SchedulerException  {
         validateState();
-
+        // 一个JOB对应多个Trigger
         // make sure all triggers refer to their associated job
         for(Entry<JobDetail, Set<? extends Trigger>> e: triggersAndJobs.entrySet()) {
             JobDetail job = e.getKey();
@@ -1057,6 +1065,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
     public void scheduleJob(JobDetail jobDetail, Set<? extends Trigger> triggersForJob,
             boolean replace) throws SchedulerException {
+        // 一个JOB对应多个Trigger
         Map<JobDetail, Set<? extends Trigger>> triggersAndJobs = new HashMap<JobDetail, Set<? extends Trigger>>();
         triggersAndJobs.put(jobDetail, triggersForJob);
         scheduleJobs(triggersAndJobs, replace);
@@ -1837,6 +1846,7 @@ J     *
 
     private List<SchedulerListener> buildSchedulerListenerList() {
         List<SchedulerListener> allListeners = new LinkedList<SchedulerListener>();
+        // 添加内部监听器和受管的监听器
         allListeners.addAll(getListenerManager().getSchedulerListeners());
         allListeners.addAll(getInternalSchedulerListeners());
     
@@ -1855,6 +1865,7 @@ J     *
     }
 
     private boolean matchTriggerListener(TriggerListener listener, TriggerKey key) {
+        // 根据监听器名称匹配是否存在对应的触发器
         List<Matcher<TriggerKey>> matchers = getListenerManager().getTriggerListenerMatchers(listener.getName());
         if(matchers == null)
             return true;
@@ -2246,8 +2257,10 @@ J     *
         List<SchedulerListener> schedListeners = buildSchedulerListenerList();
 
         // notify all scheduler listeners
+
         for(SchedulerListener sl: schedListeners) {
             try {
+                // 调度器监听器已经停止
                 sl.schedulerShutdown();
             } catch (Exception e) {
                 getLog().error(
@@ -2264,6 +2277,7 @@ J     *
         // notify all scheduler listeners
         for(SchedulerListener sl: schedListeners) {
             try {
+                // 调度器监听器正在停止
                 sl.schedulerShuttingdown();
             } catch (Exception e) {
                 getLog().error(
@@ -2272,7 +2286,11 @@ J     *
             }
         }
     }
-    
+
+    /**
+     * 向SchedulerListener通知JOB被添加了
+     * @param jobDetail
+     */
     public void notifySchedulerListenersJobAdded(JobDetail jobDetail) {
         // build a list of all scheduler listeners that are to be notified...
         List<SchedulerListener> schedListeners = buildSchedulerListenerList();
@@ -2289,6 +2307,10 @@ J     *
         }
     }
 
+    /**
+     * 向SchedulerListener通知JOB被删除了
+     * @param jobKey
+     */
     public void notifySchedulerListenersJobDeleted(JobKey jobKey) {
         // build a list of all scheduler listeners that are to be notified...
         List<SchedulerListener> schedListeners = buildSchedulerListenerList();
@@ -2322,6 +2344,7 @@ J     *
     
     
     /**
+     * 根据JobKey来中断对应的作业
      * Interrupt all instances of the identified InterruptableJob executing in 
      * this Scheduler instance.
      *  
@@ -2373,11 +2396,13 @@ J     *
      * @see org.quartz.core.RemotableQuartzScheduler#interrupt(JobKey)
      */
     public boolean interrupt(String fireInstanceId) throws UnableToInterruptJobException {
+        // 获取当前正在执行的任务
         List<JobExecutionContext> jobs = getCurrentlyExecutingJobs();
         
         Job job = null;
         
         for(JobExecutionContext jec : jobs) {
+            // 中断当前的任务,如果是不可中断的任务,则抛出异常
             if (jec.getFireInstanceId().equals(fireInstanceId)) {
                 job = jec.getJobInstance();
                 if (job instanceof InterruptableJob) {
@@ -2394,7 +2419,8 @@ J     *
         
         return false;
     }
-    
+
+    // 关闭插件
     private void shutdownPlugins() {
         java.util.Iterator<SchedulerPlugin> itr = resources.getSchedulerPlugins().iterator();
         while (itr.hasNext()) {
@@ -2404,6 +2430,7 @@ J     *
     }
 
     private void startPlugins() {
+        // 启动插件
         java.util.Iterator<SchedulerPlugin> itr = resources.getSchedulerPlugins().iterator();
         while (itr.hasNext()) {
             SchedulerPlugin plugin = itr.next();
@@ -2449,6 +2476,7 @@ class ExecutingJobsManager implements JobListener {
     }
 
     public int getNumJobsCurrentlyExecuting() {
+        // 获取当前正在执行的任务个数
         synchronized (executingJobs) {
             return executingJobs.size();
         }
@@ -2456,7 +2484,7 @@ class ExecutingJobsManager implements JobListener {
 
     public void jobToBeExecuted(JobExecutionContext context) {
         numJobsFired.incrementAndGet();
-
+        // 添加当前执行的作业到当前正在执行的作业列表中
         synchronized (executingJobs) {
             executingJobs
                     .put(((OperableTrigger)context.getTrigger()).getFireInstanceId(), context);
@@ -2465,16 +2493,19 @@ class ExecutingJobsManager implements JobListener {
 
     public void jobWasExecuted(JobExecutionContext context,
             JobExecutionException jobException) {
+        // 移除执行的任务转为已经执行完毕的左业
         synchronized (executingJobs) {
             executingJobs.remove(((OperableTrigger)context.getTrigger()).getFireInstanceId());
         }
     }
 
     public int getNumJobsFired() {
+        // 获取当前已经触发的任务
         return numJobsFired.get();
     }
 
     public List<JobExecutionContext> getExecutingJobs() {
+        // 获取当前正在执行的任务
         synchronized (executingJobs) {
             return java.util.Collections.unmodifiableList(new ArrayList<JobExecutionContext>(
                     executingJobs.values()));

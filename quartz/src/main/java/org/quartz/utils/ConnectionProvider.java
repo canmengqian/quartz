@@ -40,13 +40,18 @@ public interface ConnectionProvider {
      */
 
     /**
+     * 获取连接
      * @return connection managed by this provider
      * @throws SQLException
      */
     Connection getConnection() throws SQLException;
-    
-    
+
+    /**
+     * 关闭连接池
+     * @throws SQLException
+     */
     void shutdown() throws SQLException;
-    
+
+    //初始化
     void initialize() throws SQLException;
 }

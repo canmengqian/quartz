@@ -31,6 +31,7 @@ import org.quartz.spi.InstanceIdGenerator;
 public class SimpleInstanceIdGenerator implements InstanceIdGenerator {
     public String generateInstanceId() throws SchedulerException {
         try {
+            // 主机名称 +  当前时间
             return InetAddress.getLocalHost().getHostName() + System.currentTimeMillis();
         } catch (Exception e) {
             throw new SchedulerException("Couldn't get host name!", e);
