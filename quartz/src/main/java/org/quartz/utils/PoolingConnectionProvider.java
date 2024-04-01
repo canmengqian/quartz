@@ -37,12 +37,18 @@ public interface PoolingConnectionProvider extends ConnectionProvider {
     /** The pooling provider. */
     String POOLING_PROVIDER = "provider";
 
+    /**
+     * 内置的两种数据库连接池
+     */
     /** The c3p0 pooling provider. */
     String POOLING_PROVIDER_C3P0 = "c3p0";
 
     /** The Hikari pooling provider. */
     String POOLING_PROVIDER_HIKARICP = "hikaricp";
 
+    /**
+     * 创建连接所需要的参数
+     */
     /** The JDBC database driver. */
     String DB_DRIVER = "driver";
 
@@ -68,6 +74,10 @@ public interface PoolingConnectionProvider extends ConnectionProvider {
     int DEFAULT_DB_MAX_CONNECTIONS = 10;
 
 
+    /**
+     * 获取数据源
+     * @return
+     */
     DataSource getDataSource();
 
 }

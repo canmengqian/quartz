@@ -1088,6 +1088,7 @@ public interface DriverDelegate {
         throws SQLException;
 
     /**
+     * 删除调度实例
      * <p>
      * Delete a scheduler-instance state record.
      * </p>
@@ -1101,6 +1102,7 @@ public interface DriverDelegate {
 
     
     /**
+     * 更新调度实例状态
      * <p>
      * Update a scheduler-instance state record.
      * </p>
@@ -1113,6 +1115,7 @@ public interface DriverDelegate {
         throws SQLException;
     
     /**
+     * 所有当前 SchedulerStateRecords 的列表。
      * <p>
      * A List of all current <code>SchedulerStateRecords</code>.
      * </p>
@@ -1129,6 +1132,7 @@ public interface DriverDelegate {
         throws SQLException;
 
     /**
+     * 清理连接
      * Clear (delete!) all scheduling data - all {@link Job}s, {@link Trigger}s
      * {@link Calendar}s.
      * 

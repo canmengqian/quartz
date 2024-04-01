@@ -76,32 +76,42 @@ public interface JobStore {
         throws SchedulerConfigException;
 
     /**
+     * 由 QuartzScheduler 调用以通知 JobStore 调度程序已启动。
      * Called by the QuartzScheduler to inform the <code>JobStore</code> that
      * the scheduler has started.
      */
     void schedulerStarted() throws SchedulerException ;
 
     /**
+     * 调度器停止
      * Called by the QuartzScheduler to inform the <code>JobStore</code> that
      * the scheduler has been paused.
      */
     void schedulerPaused();
 
     /**
+     * 调度器恢复
      * Called by the QuartzScheduler to inform the <code>JobStore</code> that
      * the scheduler has resumed after being paused.
      */
     void schedulerResumed();
 
     /**
+     * 调度器停止
      * Called by the QuartzScheduler to inform the <code>JobStore</code> that
      * it should free up all of it's resources because the scheduler is
      * shutting down.
      */
     void shutdown();
 
+    /**
+     * 是否支持持久化
+     * @return
+     */
     boolean supportsPersistence();
-    
+    /**
+     * JobStore 实现估计释放一个触发器并获取一个新触发器需要多长时间(以毫秒为单位)。
+     */
     /**
      * How long (in milliseconds) the <code>JobStore</code> implementation 
      * estimates that it will take to release a trigger and acquire a new one. 
@@ -109,6 +119,7 @@ public interface JobStore {
     long getEstimatedTimeToReleaseAndAcquireTrigger();
     
     /**
+     * 是否是集群
      * Whether or not the <code>JobStore</code> implementation is clustered.
      */
     boolean isClustered();
@@ -120,6 +131,7 @@ public interface JobStore {
     /////////////////////////////////////////////////////////////////////////////
 
     /**
+     * 用于存储JobDetail 和 Trigger
      * Store the given <code>{@link org.quartz.JobDetail}</code> and <code>{@link org.quartz.Trigger}</code>.
      *
      * @param newJob
@@ -134,6 +146,7 @@ public interface JobStore {
         throws ObjectAlreadyExistsException, JobPersistenceException;
 
     /**
+     * 用于存储JobDetail并替换已有的job
      * Store the given <code>{@link org.quartz.JobDetail}</code>.
      *
      * @param newJob
@@ -149,10 +162,18 @@ public interface JobStore {
     void storeJob(JobDetail newJob, boolean replaceExisting) 
         throws ObjectAlreadyExistsException, JobPersistenceException;
 
+    /**
+     * 批量存储JobDetail和Trigger
+     * @param triggersAndJobs
+     * @param replace
+     * @throws ObjectAlreadyExistsException
+     * @throws JobPersistenceException
+     */
     public void storeJobsAndTriggers(Map<JobDetail, Set<? extends Trigger>> triggersAndJobs, boolean replace)
         throws ObjectAlreadyExistsException, JobPersistenceException;
 
     /**
+     * 根据JobKey 移除Job
      * Remove (delete) the <code>{@link org.quartz.Job}</code> with the given
      * key, and any <code>{@link org.quartz.Trigger}</code> s that reference
      * it.
@@ -173,6 +194,7 @@ public interface JobStore {
         throws JobPersistenceException;
     
     /**
+     * 根据JobKey 获取JobDetail
      * Retrieve the <code>{@link org.quartz.JobDetail}</code> for the given
      * <code>{@link org.quartz.Job}</code>.
      *
@@ -182,6 +204,7 @@ public interface JobStore {
         throws JobPersistenceException;
 
     /**
+     * 存储Trigger并替换已有的trigger
      * Store the given <code>{@link org.quartz.Trigger}</code>.
      *
      * @param newTrigger
@@ -200,6 +223,7 @@ public interface JobStore {
         throws ObjectAlreadyExistsException, JobPersistenceException;
 
     /**
+     * 移除Trigger
      * Remove (delete) the <code>{@link org.quartz.Trigger}</code> with the
      * given key.
      *
@@ -220,10 +244,17 @@ public interface JobStore {
      */
     boolean removeTrigger(TriggerKey triggerKey) throws JobPersistenceException;
 
+    /**
+     * 批量移除Trigger
+     * @param triggerKeys
+     * @return
+     * @throws JobPersistenceException
+     */
     public boolean removeTriggers(List<TriggerKey> triggerKeys)
         throws JobPersistenceException;
 
     /**
+     * 替换Trigger
      * Remove (delete) the <code>{@link org.quartz.Trigger}</code> with the
      * given key, and store the new given one - which must be associated
      * with the same job.
@@ -238,6 +269,7 @@ public interface JobStore {
         throws JobPersistenceException;
 
     /**
+     * 根据TriggerKey 获取Trigger
      * Retrieve the given <code>{@link org.quartz.Trigger}</code>.
      *
      * @return The desired <code>Trigger</code>, or null if there is no
@@ -247,6 +279,7 @@ public interface JobStore {
 
     
     /**
+     * 检查Job是否存在
      * Determine whether a {@link Job} with the given identifier already 
      * exists within the scheduler.
      * 
@@ -257,6 +290,7 @@ public interface JobStore {
     boolean checkExists(JobKey jobKey) throws JobPersistenceException; 
    
     /**
+     * 检查Trigger是否存在
      * Determine whether a {@link Trigger} with the given identifier already 
      * exists within the scheduler.
      * 

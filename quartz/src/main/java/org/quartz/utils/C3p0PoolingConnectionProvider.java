@@ -54,6 +54,7 @@ public class C3p0PoolingConnectionProvider implements PoolingConnectionProvider 
      */
 
     /**
+     * 每个连接池中缓存的PreparedStatement的最大数量。
      * The maximum number of prepared statements that will be cached per connection in the pool.
      * Depending upon your JDBC Driver this may significantly help performance, or may slightly 
      * hinder performance.   
@@ -62,19 +63,23 @@ public class C3p0PoolingConnectionProvider implements PoolingConnectionProvider 
     public static final String DB_MAX_CACHED_STATEMENTS_PER_CONNECTION = "maxCachedStatementsPerConnection";
 
     /**
+     * 空闲连接的检测周期，单位为秒。
      * The number of seconds between tests of idle connections - only enabled
      * if the validation query property is set.  Default is 50 seconds. 
      */
     public static final String DB_IDLE_VALIDATION_SECONDS = "idleConnectionValidationSeconds";
 
     /**
+     * 有效性检测。
      * Whether the database sql query to validate connections should be executed every time 
      * a connection is retrieved from the pool to ensure that it is still valid.  If false,
      * then validation will occur on check-in.  Default is false. 
      */
     public static final String DB_VALIDATE_ON_CHECKOUT = "validateOnCheckout";
 
-    /** Discard connections after they have been idle this many seconds.  0 disables the feature. Default is 0.*/
+    /**
+     * 最大空闲时间。
+     * Discard connections after they have been idle this many seconds.  0 disables the feature. Default is 0.*/
     public static final String DB_DISCARD_IDLE_CONNECTIONS_SECONDS = "maxIdleTime";
 
     /** Default maximum number of database connections in the pool. */

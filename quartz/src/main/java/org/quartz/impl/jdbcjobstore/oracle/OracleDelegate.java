@@ -49,6 +49,8 @@ import org.slf4j.Logger;
  */
 public class OracleDelegate extends StdJDBCDelegate {
 
+    // 保存JOB DETAIL
+    // SQL: INSERT INTO JOB_DETAILS.... VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, EMPTY_BLOB())
     public static final String INSERT_ORACLE_JOB_DETAIL = "INSERT INTO "
         + TABLE_PREFIX_SUBST + TABLE_JOB_DETAILS + " (" + COL_SCHEDULER_NAME + ", " 
         + COL_JOB_NAME + ", " + COL_JOB_GROUP + ", " + COL_DESCRIPTION + ", "
@@ -57,6 +59,13 @@ public class OracleDelegate extends StdJDBCDelegate {
         + COL_REQUESTS_RECOVERY + ", "
         + COL_JOB_DATAMAP + ") " + " VALUES(" + SCHED_NAME_SUBST + ", ?, ?, ?, ?, ?, ?, ?, ?, EMPTY_BLOB())";
 
+    /**
+     * SQL: UPDATE JOB_DETAILS.... SET ..., JOB_DATAMAP = EMPTY_BLOB()
+     * DESCRIPTION
+     * IS_DURABLE
+     * COL_IS_UPDATE_DATA
+     * WHERE SCHEDULER_NAME = ? AND JOB_NAME = ? AND JOB_GROUP = ?
+     */
     public static final String UPDATE_ORACLE_JOB_DETAIL = "UPDATE "
             + TABLE_PREFIX_SUBST + TABLE_JOB_DETAILS + " SET "
             + COL_DESCRIPTION + " = ?, " + COL_JOB_CLASS + " = ?, "
@@ -66,18 +75,44 @@ public class OracleDelegate extends StdJDBCDelegate {
             + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_JOB_NAME + " = ? AND " + COL_JOB_GROUP + " = ?";
 
+    /**
+     * SQL: UPDATE JOB_DETAILS.... SET ..., JOB_DATAMAP = ?
+     * WHERE SCHEDULER_NAME = ? AND JOB_NAME = ? AND JOB_GROUP = ?
+     */
     public static final String UPDATE_ORACLE_JOB_DETAIL_BLOB = "UPDATE "
             + TABLE_PREFIX_SUBST + TABLE_JOB_DETAILS + " SET "
             + COL_JOB_DATAMAP + " = ? " + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_JOB_NAME
             + " = ? AND " + COL_JOB_GROUP + " = ?";
 
+    /**
+     * SQL: SELECT JOB_DATAMAP FROM JOB_DETAILS
+     * WHERE SCHEDULER_NAME = ? AND JOB_NAME = ? AND JOB_GROUP = ? FOR UPDATE
+     */
     public static final String SELECT_ORACLE_JOB_DETAIL_BLOB = "SELECT "
             + COL_JOB_DATAMAP + " FROM " + TABLE_PREFIX_SUBST
             + TABLE_JOB_DETAILS + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_JOB_NAME + " = ? AND "
             + COL_JOB_GROUP + " = ? FOR UPDATE";
 
+    // 更新触发器
+    // SQL: UPDATE TRIGGERS.... SET ...,
+    // JOB_NAME = ?,
+    // JOB_GROUP = ?,
+    // DESCRIPTION = ?,
+    // NEXT_FIRE_TIME = ?,
+    // PREV_FIRE_TIME = ?,
+    // TRIGGER_STATE = ?,
+    // TRIGGER_TYPE=?,
+    // START_TIME=?
+    // END_TIME=?,
+    // CALENDAR_NAME=?,
+    // MISFIRE_INSTRUCTION=?,
+    // PRIORITY=?
+    // JOB_NAME = ?,
+    // JOB_GROUP = ?,
+    // JOB_DATAMAP = EMPTY_BLOB()
+    // WHERE SCHEDULER_NAME = ? AND TRIGGER_NAME = ? AND TRIGGER_GROUP = ?
     public static final String UPDATE_ORACLE_TRIGGER = "UPDATE "  
         + TABLE_PREFIX_SUBST + TABLE_TRIGGERS + " SET " + COL_JOB_NAME  
         + " = ?, " + COL_JOB_GROUP + " = ?, "
@@ -90,36 +125,54 @@ public class OracleDelegate extends StdJDBCDelegate {
         + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
         + " AND " + COL_TRIGGER_NAME + " = ? AND " + COL_TRIGGER_GROUP + " = ?";
 
-    
+    /**
+     * SQL: SELECT JOB_DATA FROM TRIGGERS
+     * WHERE SCHEDULER_NAME = ? AND TRIGGER_NAME = ? AND TRIGGER_GROUP = ? FOR UPDATE
+     */
     public static final String SELECT_ORACLE_TRIGGER_JOB_DETAIL_BLOB = "SELECT "
         + COL_JOB_DATAMAP + " FROM " + TABLE_PREFIX_SUBST
         + TABLE_TRIGGERS + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
         + " AND " + COL_TRIGGER_NAME + " = ? AND "
         + COL_TRIGGER_GROUP + " = ? FOR UPDATE";
 
+    /**
+     * SQL: UPDATE TRIGGERS.... SET ...,
+     * JOB_DATA = ?
+     * WHERE SCHEDULER_NAME = ? AND TRIGGER_NAME = ? AND TRIGGER_GROUP = ?
+     */
     public static final String UPDATE_ORACLE_TRIGGER_JOB_DETAIL_BLOB = "UPDATE "
         + TABLE_PREFIX_SUBST + TABLE_TRIGGERS + " SET "
         + COL_JOB_DATAMAP + " = ? " + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
         + " AND " + COL_TRIGGER_NAME
         + " = ? AND " + COL_TRIGGER_GROUP + " = ?";
 
+    // 更新触发器
+    // SQL: UPDATE TRIGGERS.... SET ...,
+    // JOB_DATA = EMPTY_BLOB()
+    // WHERE SCHEDULER_NAME = ? AND TRIGGER_NAME = ? AND TRIGGER_GROUP = ?
     public static final String UPDATE_ORACLE_TRIGGER_JOB_DETAIL_EMPTY_BLOB = "UPDATE "
         + TABLE_PREFIX_SUBST + TABLE_TRIGGERS + " SET "
         + COL_JOB_DATAMAP + " = EMPTY_BLOB() " + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
         + " AND " + COL_TRIGGER_NAME
         + " = ? AND " + COL_TRIGGER_GROUP + " = ?";
     
-    
+    // 保存日历
+    // SQL: INSERT INTO CALENDARS.... VALUES(?, ?, EMPTY_BLOB())
     public static final String INSERT_ORACLE_CALENDAR = "INSERT INTO "
             + TABLE_PREFIX_SUBST + TABLE_CALENDARS + " (" + COL_SCHEDULER_NAME + ", " 
             + COL_CALENDAR_NAME + ", " + COL_CALENDAR + ") " 
             + " VALUES(" + SCHED_NAME_SUBST + ", ?, EMPTY_BLOB())";
 
+    // SQL: SELECT CALENDAR FROM CALENDARS
+    // WHERE SCHEDULER_NAME = ? AND CALENDAR_NAME = ? FOR UPDATE
     public static final String SELECT_ORACLE_CALENDAR_BLOB = "SELECT "
             + COL_CALENDAR + " FROM " + TABLE_PREFIX_SUBST + TABLE_CALENDARS
             + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_CALENDAR_NAME + " = ? FOR UPDATE";
 
+    /**
+     * SQL: UPDATE CALENDARS.... SET ...,
+     */
     public static final String UPDATE_ORACLE_CALENDAR_BLOB = "UPDATE "
             + TABLE_PREFIX_SUBST + TABLE_CALENDARS + " SET " + COL_CALENDAR
             + " = ? " + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
