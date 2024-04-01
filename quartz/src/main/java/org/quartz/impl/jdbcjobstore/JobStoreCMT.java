@@ -60,9 +60,11 @@ public class JobStoreCMT extends JobStoreSupport {
     protected String nonManagedTxDsName;
 
     // Great name huh?
+    // 设置数据库事务是否为自动提交
     protected boolean dontSetNonManagedTXConnectionAutoCommitFalse = false;
 
-    
+
+    // 设置数据库事务隔离级别为ReadCommitted
     protected boolean setTxIsolationLevelReadCommitted = false;
     
     /*
@@ -135,13 +137,13 @@ public class JobStoreCMT extends JobStoreSupport {
                 "datasource (for the same DB).  " + 
                 "Otherwise, you can set them to be the same.");
         }
-
+        // 使用数据库锁
         if (getLockHandler() == null) {
             // If the user hasn't specified an explicit lock handler, 
             // then we *must* use DB locks with CMT...
             setUseDBLocks(true);
         }
-
+        // 初始化父类
         super.initialize(loadHelper, signaler);
 
         getLog().info("JobStoreCMT initialized.");
@@ -164,6 +166,7 @@ public class JobStoreCMT extends JobStoreSupport {
         throws JobPersistenceException {
         Connection conn = null;
         try {
+            // 获取数据库连接
             conn = DBConnectionManager.getInstance().getConnection(
                     getNonManagedTXDataSource());
         } catch (SQLException sqle) {
@@ -185,14 +188,16 @@ public class JobStoreCMT extends JobStoreSupport {
         }
 
         // Protect connection attributes we might change.
+        //TODO, 使用代理的方式， 保护我们可能更改的连接属性。
         conn = getAttributeRestoringConnection(conn);
         
         // Set any connection connection attributes we are to override.
         try {
+            // 设置自动提交=false
             if (!isDontSetNonManagedTXConnectionAutoCommitFalse()) {
                 conn.setAutoCommit(false);
             }
-            
+            // 设置事务隔离级别=ReadCommitted
             if (isTxIsolationLevelReadCommitted()) {
                 conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             }
@@ -233,17 +238,19 @@ public class JobStoreCMT extends JobStoreSupport {
             if (lockName != null) {
                 // If we aren't using db locks, then delay getting DB connection 
                 // until after acquiring the lock since it isn't needed.
+                //如果我们不使用数据库锁，那么在获取锁之后再获取数据库连接，因为不需要这个锁。
                 if (getLockHandler().requiresConnection()) {
                     conn = getConnection();
                 }
-                
+                // 获取锁
                 transOwner = getLockHandler().obtainLock(conn, lockName);
             }
 
+            // 如果不需要锁，这一步不会执行,必须先获取锁
             if (conn == null) {
                 conn = getConnection();
             }
-
+            // 通过连接执行回调的接口语句
             return txCallback.execute(conn);
         } finally {
             try {

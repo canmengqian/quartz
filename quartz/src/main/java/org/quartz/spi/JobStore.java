@@ -189,7 +189,13 @@ public interface JobStore {
      */
     boolean removeJob(JobKey jobKey) 
         throws JobPersistenceException;
-    
+
+    /**
+     * 批量移除Job
+     * @param jobKeys
+     * @return
+     * @throws JobPersistenceException
+     */
     public boolean removeJobs(List<JobKey> jobKeys) 
         throws JobPersistenceException;
     
@@ -299,7 +305,10 @@ public interface JobStore {
      * @throws JobPersistenceException
      */
     boolean checkExists(TriggerKey triggerKey) throws JobPersistenceException;
- 
+
+    /**
+     * 清理所有调度数据
+     */
     /**
      * Clear (delete!) all scheduling data - all {@link Job}s, {@link Trigger}s
      * {@link Calendar}s.
@@ -307,7 +316,10 @@ public interface JobStore {
      * @throws JobPersistenceException
      */
     void clearAllSchedulingData() throws JobPersistenceException;
-    
+
+    /**
+     * 存储日历
+     */
     /**
      * Store the given <code>{@link org.quartz.Calendar}</code>.
      *
@@ -330,6 +342,11 @@ public interface JobStore {
         throws ObjectAlreadyExistsException, JobPersistenceException;
 
     /**
+     * 移除指定日历
+     * @return
+     * @throws JobPersistenceException
+     */
+    /**
      * Remove (delete) the <code>{@link org.quartz.Calendar}</code> with the
      * given name.
      *
@@ -345,6 +362,9 @@ public interface JobStore {
     boolean removeCalendar(String calName)
         throws JobPersistenceException;
 
+    /**
+     * 根据名称获取日历
+     */
     /**
      * Retrieve the given <code>{@link org.quartz.Trigger}</code>.
      *
@@ -362,6 +382,7 @@ public interface JobStore {
     //
     /////////////////////////////////////////////////////////////////////////////
 
+    // 获取job的个数
     /**
      * Get the number of <code>{@link org.quartz.Job}</code> s that are
      * stored in the <code>JobsStore</code>.
@@ -369,6 +390,7 @@ public interface JobStore {
     int getNumberOfJobs()
         throws JobPersistenceException;
 
+    // 获取trigger的个数
     /**
      * Get the number of <code>{@link org.quartz.Trigger}</code> s that are
      * stored in the <code>JobsStore</code>.
@@ -376,6 +398,7 @@ public interface JobStore {
     int getNumberOfTriggers()
         throws JobPersistenceException;
 
+    // 获取日历的个数
     /**
      * Get the number of <code>{@link org.quartz.Calendar}</code> s that are
      * stored in the <code>JobsStore</code>.
@@ -383,6 +406,7 @@ public interface JobStore {
     int getNumberOfCalendars()
         throws JobPersistenceException;
 
+    // 根据匹配器获取job的key集合
     /**
      * Get the keys of all of the <code>{@link org.quartz.Job}</code> s that
      * have the given group name.
@@ -395,6 +419,7 @@ public interface JobStore {
     Set<JobKey> getJobKeys(GroupMatcher<JobKey> matcher)
         throws JobPersistenceException;
 
+    // 根据匹配器获取trigger的key集合
     /**
      * Get the names of all of the <code>{@link org.quartz.Trigger}</code> s
      * that have the given group name.
@@ -407,6 +432,7 @@ public interface JobStore {
     Set<TriggerKey> getTriggerKeys(GroupMatcher<TriggerKey> matcher)
         throws JobPersistenceException;
 
+    // 获取job组名称集合
     /**
      * Get the names of all of the <code>{@link org.quartz.Job}</code>
      * groups.
@@ -419,6 +445,7 @@ public interface JobStore {
     List<String> getJobGroupNames()
         throws JobPersistenceException;
 
+    // 获取trigger组名称集合
     /**
      * Get the names of all of the <code>{@link org.quartz.Trigger}</code>
      * groups.
@@ -431,6 +458,7 @@ public interface JobStore {
     List<String> getTriggerGroupNames()
         throws JobPersistenceException;
 
+    // 获取日历名称集合
     /**
      * Get the names of all of the <code>{@link org.quartz.Calendar}</code> s
      * in the <code>JobStore</code>.
@@ -443,6 +471,7 @@ public interface JobStore {
     List<String> getCalendarNames()
         throws JobPersistenceException;
 
+    // 根据jobkey获取trigger集合
     /**
      * Get all of the Triggers that are associated to the given Job.
      *
@@ -452,6 +481,7 @@ public interface JobStore {
      */
     List<OperableTrigger> getTriggersForJob(JobKey jobKey) throws JobPersistenceException;
 
+    // 获取trigger状态
     /**
      * Get the current state of the identified <code>{@link Trigger}</code>.
      *
@@ -459,6 +489,7 @@ public interface JobStore {
      */
     TriggerState getTriggerState(TriggerKey triggerKey) throws JobPersistenceException;
 
+    // 重置trigger状态
     /**
      * Reset the current state of the identified <code>{@link Trigger}</code>
      * from {@link TriggerState#ERROR} to {@link TriggerState#NORMAL} or
@@ -474,12 +505,14 @@ public interface JobStore {
     void resetTriggerFromErrorState(TriggerKey triggerKey) throws JobPersistenceException;
 
 
+
     /////////////////////////////////////////////////////////////////////////////
     //
     // Trigger State manipulation methods
     //
     /////////////////////////////////////////////////////////////////////////////
 
+    // 暂停trigger
     /**
      * Pause the <code>{@link org.quartz.Trigger}</code> with the given key.
      *
@@ -487,6 +520,7 @@ public interface JobStore {
      */
     void pauseTrigger(TriggerKey triggerKey) throws JobPersistenceException;
 
+    //根据匹配器批量暂停trigger
     /**
      * Pause all of the <code>{@link org.quartz.Trigger}s</code> in the
      * given group.
@@ -502,6 +536,7 @@ public interface JobStore {
      */
     Collection<String> pauseTriggers(GroupMatcher<TriggerKey> matcher) throws JobPersistenceException;
 
+    //根据jobkey 暂停job
     /**
      * Pause the <code>{@link org.quartz.Job}</code> with the given name - by
      * pausing all of its current <code>Trigger</code>s.
@@ -510,6 +545,7 @@ public interface JobStore {
      */
     void pauseJob(JobKey jobKey) throws JobPersistenceException;
 
+    // 根据匹配器批量暂停job
     /**
      * Pause all of the <code>{@link org.quartz.Job}s</code> in the given
      * group - by pausing all of their <code>Trigger</code>s.
@@ -525,6 +561,7 @@ public interface JobStore {
     Collection<String> pauseJobs(GroupMatcher<JobKey> groupMatcher)
         throws JobPersistenceException;
 
+    // 恢复trigger
     /**
      * Resume (un-pause) the <code>{@link org.quartz.Trigger}</code> with the
      * given key.
@@ -538,6 +575,7 @@ public interface JobStore {
      */
     void resumeTrigger(TriggerKey triggerKey) throws JobPersistenceException;
 
+    // 根据匹配器批量恢复trigger
     /**
      * Resume (un-pause) all of the <code>{@link org.quartz.Trigger}s</code>
      * in the given group.
@@ -552,9 +590,11 @@ public interface JobStore {
     Collection<String> resumeTriggers(GroupMatcher<TriggerKey> matcher)
         throws JobPersistenceException;
 
+    // 获取暂停的trigger组
     Set<String> getPausedTriggerGroups()
         throws JobPersistenceException;
 
+    //根据jobkey恢复job
     /**
      * Resume (un-pause) the <code>{@link org.quartz.Job}</code> with the
      * given key.
@@ -569,6 +609,7 @@ public interface JobStore {
      */
     void resumeJob(JobKey jobKey) throws JobPersistenceException;
 
+    // 根据匹配器批量恢复job
     /**
      * Resume (un-pause) all of the <code>{@link org.quartz.Job}s</code> in
      * the given group.
@@ -584,6 +625,7 @@ public interface JobStore {
     Collection<String> resumeJobs(GroupMatcher<JobKey> matcher)
         throws JobPersistenceException;
 
+    // 暂停所有job
     /**
      * Pause all triggers - equivalent of calling <code>pauseTriggerGroup(group)</code>
      * on every group.
@@ -598,6 +640,7 @@ public interface JobStore {
      */
     void pauseAll() throws JobPersistenceException;
 
+    // 恢复所有job
     /**
      * Resume (un-pause) all triggers - equivalent of calling <code>resumeTriggerGroup(group)</code>
      * on every group.
@@ -618,6 +661,7 @@ public interface JobStore {
     //
     /////////////////////////////////////////////////////////////////////////////
 
+    // 获取下一批可以执行的触发器
     /**
      * Get a handle to the next trigger to be fired, and mark it as 'reserved'
      * by the calling scheduler.
@@ -630,6 +674,7 @@ public interface JobStore {
     List<OperableTrigger> acquireNextTriggers(long noLaterThan, int maxCount, long timeWindow)
         throws JobPersistenceException;
 
+    // 释放触发器
     /**
      * Inform the <code>JobStore</code> that the scheduler no longer plans to
      * fire the given <code>Trigger</code>, that it had previously acquired
@@ -637,6 +682,7 @@ public interface JobStore {
      */
     void releaseAcquiredTrigger(OperableTrigger trigger);
 
+    // 批量执行触发器
     /**
      * Inform the <code>JobStore</code> that the scheduler is now firing the
      * given <code>Trigger</code> (executing its associated <code>Job</code>),
@@ -649,6 +695,7 @@ public interface JobStore {
      */
     List<TriggerFiredResult> triggersFired(List<OperableTrigger> triggers) throws JobPersistenceException;
 
+    // 触发器调度对应的job完成
     /**
      * Inform the <code>JobStore</code> that the scheduler has completed the
      * firing of the given <code>Trigger</code> (and the execution of its
@@ -659,6 +706,7 @@ public interface JobStore {
      */
     void triggeredJobComplete(OperableTrigger trigger, JobDetail jobDetail, CompletedExecutionInstruction triggerInstCode);
 
+    // 设置实例id
     /**
      * Inform the <code>JobStore</code> of the Scheduler instance's Id,
      * prior to initialize being invoked.
@@ -667,6 +715,7 @@ public interface JobStore {
      */
     void setInstanceId(String schedInstId);
 
+    // 设置实例名称
     /**
      * Inform the <code>JobStore</code> of the Scheduler instance's name,
      * prior to initialize being invoked.
@@ -675,6 +724,7 @@ public interface JobStore {
      */
     void setInstanceName(String schedName);
 
+    // 设置线程池大小
     /**
      * Tells the JobStore the pool size used to execute jobs
      * @param poolSize amount of threads allocated for job execution
@@ -682,6 +732,7 @@ public interface JobStore {
      */
     void setThreadPoolSize(int poolSize);
 
+    // 延迟重试后获取到的？个数
     /**
      * Get the amount of time (in ms) to wait when accessing this job store
      * repeatedly fails.

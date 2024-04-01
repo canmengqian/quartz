@@ -27,6 +27,11 @@ import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.SchedulerSignaler;
 
 /**
+ * 这个类是一个事务性JobStore
+ * 都是委托给JobStoreSupport
+ */
+
+/**
  * <p>
  * <code>JobStoreTX</code> is meant to be used in a standalone environment.
  * Both commit and rollback will be handled by this class.

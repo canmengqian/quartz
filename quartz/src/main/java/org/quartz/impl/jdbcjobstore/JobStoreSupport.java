@@ -3684,7 +3684,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
                 if (invocationHandler instanceof AttributeRestoringConnectionInvocationHandler) {
                     AttributeRestoringConnectionInvocationHandler connHandler =
                         (AttributeRestoringConnectionInvocationHandler)invocationHandler;
-                        
+                     // 关闭代理
                     connHandler.restoreOriginalAtributes();
                     closeConnection(connHandler.getWrappedConnection());
                     return;
@@ -3692,6 +3692,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             }
             
             // Wan't a Proxy, or was a Proxy, but wasn't ours.
+            // 不是代理人，或者曾经是代理人，但不是我们的。
             closeConnection(conn);
         }
     }

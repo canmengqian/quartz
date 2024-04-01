@@ -72,12 +72,15 @@ public class JTANonClusteredSemaphore implements Semaphore {
 
     public static final String DEFAULT_TRANSACTION_MANANGER_LOCATION = "java:TransactionManager";
 
+    // 本地线程持有锁集合
     ThreadLocal<HashSet<String>> lockOwners = new ThreadLocal<HashSet<String>>();
 
+    // 全局锁集合
     HashSet<String> locks = new HashSet<String>();
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    // JNDI name of the TransactionManager
     private String transactionManagerJNDIName = DEFAULT_TRANSACTION_MANANGER_LOCATION;
     
     
@@ -122,15 +125,18 @@ public class JTANonClusteredSemaphore implements Semaphore {
                         + Thread.currentThread().getName());
         }
 
+
         if (!isLockOwner(conn, lockName)) {
+            // 当前线程没有持有锁
             if(log.isDebugEnabled()) {
                 log.debug(
                     "Lock '" + lockName + "' is being obtained: "
                             + Thread.currentThread().getName());
             }
-            
+            //
             while (locks.contains(lockName)) {
                 try {
+                    // 等待锁释放
                     this.wait();
                 } catch (InterruptedException ie) {
                     if(log.isDebugEnabled()) {
@@ -143,9 +149,11 @@ public class JTANonClusteredSemaphore implements Semaphore {
 
             // If we are in a transaction, register a callback to actually release
             // the lock when the transaction completes
+            //如果我们处于一个事务中，注册一个回调，以便在事务完成时实际释放锁
             Transaction t = getTransaction();
             if (t != null) {
                 try {
+                    // TODO 同步锁？
                     t.registerSynchronization(new SemaphoreSynchronization(lockName));
                 } catch (Exception e) {
                     throw new LockException("Failed to register semaphore with Transaction.", e);
@@ -158,7 +166,7 @@ public class JTANonClusteredSemaphore implements Semaphore {
                             + Thread.currentThread().getName());
             }
             
-            
+            // 记录当前线程持有锁
             getThreadLocks().add(lockName);
             locks.add(lockName);
         } else if(log.isDebugEnabled()) {
@@ -224,6 +232,7 @@ public class JTANonClusteredSemaphore implements Semaphore {
         String lockName, boolean fromSynchronization) throws LockException {
         lockName = lockName.intern();
 
+        // 当前线程是否是锁的持有者
         if (isLockOwner(null, lockName)) {
             
             if (fromSynchronization == false) {
@@ -246,6 +255,7 @@ public class JTANonClusteredSemaphore implements Semaphore {
                     "Lock '" + lockName + "' returned by: "
                             + Thread.currentThread().getName());
             }
+            // 释放锁
             getThreadLocks().remove(lockName);
             locks.remove(lockName);
             this.notify();

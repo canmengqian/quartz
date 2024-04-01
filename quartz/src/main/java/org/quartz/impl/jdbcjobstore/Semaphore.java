@@ -34,6 +34,7 @@ public interface Semaphore {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
+    // 获取锁
     /**
      * Grants a lock on the identified resource to the calling thread (blocking
      * until it is available).
@@ -45,12 +46,14 @@ public interface Semaphore {
      */
     boolean obtainLock(Connection conn, String lockName) throws LockException;
 
+    // 释放锁
     /**
      * Release the lock on the identified resource if it is held by the calling
      * thread.
      */
     void releaseLock(String lockName) throws LockException;
 
+    // 是否获取到连接
     /**
      * Whether this Semaphore implementation requires a database connection for
      * its lock management operations.
