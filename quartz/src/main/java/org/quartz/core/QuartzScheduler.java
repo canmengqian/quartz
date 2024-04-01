@@ -601,6 +601,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
      * </p>
      */
     public void standby() {
+        // 暂停调度器
         resources.getJobStore().schedulerPaused();
         schedThread.togglePause(true);
         getLog().info(
@@ -614,6 +615,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
      * </p>
      */
     public boolean isInStandbyMode() {
+        // 待机模式
         return schedThread.isPaused();
     }
 
@@ -710,8 +712,9 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
         // }
         // }
 
+        // 先待机
         standby();
-
+        // 根据配置，停止线程池
         schedThread.halt(waitForJobsToComplete);
         
         notifySchedulerListenersShuttingdown();
@@ -729,7 +732,7 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
                     }
             }
         }
-        
+        // 停止线程池
         resources.getThreadPool().shutdown(waitForJobsToComplete);
         
         closed = true;
@@ -747,13 +750,15 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
             } catch (RemoteException re) {
             }
         }
-        
+        // 停止插件
         shutdownPlugins();
 
+        // 停止存储器
         resources.getJobStore().shutdown();
 
         notifySchedulerListenersShutdown();
 
+        // 移除调度器
         SchedulerRepository.getInstance().remove(resources.getName());
 
         holdToPreventGC.clear();
