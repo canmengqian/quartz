@@ -20,6 +20,7 @@ package org.quartz;
 import java.util.Date;
 
 /**
+ * JOB 执行上下文,维护了一些必须的属性
  * A context bundle containing handles to various environment information, that
  * is given to a <code>{@link org.quartz.JobDetail}</code> instance as it is
  * executed, and to a <code>{@link Trigger}</code> instance after the
@@ -63,6 +64,7 @@ import java.util.Date;
 public interface JobExecutionContext {
 
     /**
+     * JOB 对应的调度器
      * <p>
      * Get a handle to the <code>Scheduler</code> instance that fired the
      * <code>Job</code>.
@@ -71,6 +73,7 @@ public interface JobExecutionContext {
     public Scheduler getScheduler();
 
     /**
+     * JOB 对应的触发器
      * <p>
      * Get a handle to the <code>Trigger</code> instance that fired the
      * <code>Job</code>.
@@ -78,6 +81,9 @@ public interface JobExecutionContext {
      */
     public Trigger getTrigger();
 
+    /**
+     * JOB 对应的执行日历
+     */
     /**
      * <p>
      * Get a handle to the <code>Calendar</code> referenced by the <code>Trigger</code>
@@ -109,6 +115,7 @@ public interface JobExecutionContext {
      */
     public TriggerKey getRecoveringTriggerKey() throws IllegalStateException;
 
+    // JOB 重新执行次数
     public int getRefireCount();
 
     /**

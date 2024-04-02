@@ -89,6 +89,7 @@ public class JTAAnnotationAwareJobRunShellFactory implements JobRunShellFactory 
     }
 
     /**
+     * 根据注解来判断创建带事务还是不带事务的job shell
      * <p>
      * Called by the <code>{@link org.quartz.core.QuartzSchedulerThread}</code>
      * to obtain instances of <code>{@link org.quartz.core.JobRunShell}</code>.

@@ -21,6 +21,7 @@ import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 
 /**
+ * trigger 执行过程中中间状态的产物
  * <p>
  * Conveys the state of a fired-trigger record.
  * </p>
@@ -39,24 +40,34 @@ public class FiredTriggerRecord implements java.io.Serializable {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
+    // trigger 实例id
     private String fireInstanceId;
 
+    // 触发时间
     private long fireTimestamp;
 
+    // 调度时间
     private long scheduleTimestamp;
-    
+
+    // 调度实例id
     private String schedulerInstanceId;
 
+    // 触发器标识
     private TriggerKey triggerKey;
 
+    // 触发器状态
     private String fireInstanceState;
 
+    // job 标识
     private JobKey jobKey;
 
+    // job 是否不允许并发执行
     private boolean jobDisallowsConcurrentExecution;
 
+    // job 是否需要恢复
     private boolean jobRequestsRecovery;
 
+    // 优先级
     private int priority;
 
     /*

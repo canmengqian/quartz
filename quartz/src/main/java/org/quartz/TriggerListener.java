@@ -43,6 +43,7 @@ public interface TriggerListener {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
+    // trigger 监听器名称
     /**
      * <p>
      * Get the name of the <code>TriggerListener</code>.
@@ -50,6 +51,7 @@ public interface TriggerListener {
      */
     String getName();
 
+    // 触发器被执行了
     /**
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link Trigger}</code>
@@ -70,6 +72,7 @@ public interface TriggerListener {
      */
     void triggerFired(Trigger trigger, JobExecutionContext context);
 
+    // 触发器取消了job任务
     /**
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link Trigger}</code>
@@ -91,6 +94,7 @@ public interface TriggerListener {
      */
     boolean vetoJobExecution(Trigger trigger, JobExecutionContext context);
 
+    // 触发器错过了执行时间段
     
     /**
      * <p>
@@ -110,6 +114,7 @@ public interface TriggerListener {
      */
     void triggerMisfired(Trigger trigger);
 
+    // 触发器执行完成
     /**
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link Trigger}</code>

@@ -114,16 +114,19 @@ public class PropertiesParser {
         }
     }
 
+    // value转为boolean
     public boolean getBooleanProperty(String name) {
         return getBooleanProperty(name, false);
     }
 
+    // value转为boolean,null给一个默认值
     public boolean getBooleanProperty(String name, boolean def) {
         String val = getStringProperty(name);
         
         return (val == null) ? def : Boolean.valueOf(val).booleanValue();
     }
 
+    // value转为byte
     public byte getByteProperty(String name) throws NumberFormatException {
         String val = getStringProperty(name);
         if (val == null) {
@@ -137,6 +140,7 @@ public class PropertiesParser {
         }
     }
 
+    // value转为byte,null给一个默认值
     public byte getByteProperty(String name, byte def)
         throws NumberFormatException {
         String val = getStringProperty(name);
@@ -151,6 +155,7 @@ public class PropertiesParser {
         }
     }
 
+    // value转为char
     public char getCharProperty(String name) {
         return getCharProperty(name, '\0');
     }

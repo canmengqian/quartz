@@ -24,6 +24,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 
 /**
+ * 调度器仓库,维护了调度器实例和调度器名称的映射关系
  * <p>
  * Holds references to Scheduler instances - ensuring uniqueness, and
  * preventing garbage collection, and allowing 'global' lookups - all within a

@@ -70,8 +70,12 @@ public class WorkManagerThreadExecutor implements ThreadExecutor {
 
 }
 
+/**
+ * 委托模式,自身不作业务操作，而是委托到Runnable
+ */
 class DelegatingWork implements Work {
 
+    // 委托执行的业务线程
     private final Runnable delegate;
 
     /**

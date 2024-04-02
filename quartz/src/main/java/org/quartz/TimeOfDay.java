@@ -80,6 +80,7 @@ public class TimeOfDay implements Serializable {
     }
 
     /**
+     *  创建一个TimeOfDay实例
      * Create a TimeOfDay instance for the given hour, minute and second.
      * 
      * @param hour The hour of day, between 0 and 23.
@@ -130,6 +131,7 @@ public class TimeOfDay implements Serializable {
     }
 
     /**
+     * 比较时间是否早于给定的时间
      * Determine with this time of day is before the given time of day.
      * 
      * @return true this time of day is before the given time of day.
@@ -183,6 +185,7 @@ public class TimeOfDay implements Serializable {
     }
     
     /**
+     * Date 转换为TimeOfDay
      * Create a TimeOfDay from the given date, in the system default TimeZone.
      * 
      * @param dateTime The java.util.Date from which to extract Hour, Minute and Second.
@@ -190,7 +193,9 @@ public class TimeOfDay implements Serializable {
     public static TimeOfDay hourAndMinuteAndSecondFromDate(Date dateTime) {
         return hourAndMinuteAndSecondFromDate(dateTime, null);
     }
-    
+    /**
+     * Date 转换为TimeOfDay
+     */
     /**
      * Create a TimeOfDay from the given date, in the given TimeZone.
      * 

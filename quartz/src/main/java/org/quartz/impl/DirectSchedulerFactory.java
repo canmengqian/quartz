@@ -532,7 +532,7 @@ public class DirectSchedulerFactory implements SchedulerFactory {
         // 初始化线程池
         threadPool.initialize();
         // Currently only one run-shell factory is available...
-        //翻译：创建一个调度器
+        //翻译：创建一个shell 工厂
         JobRunShellFactory jrsf = new StdJobRunShellFactory();
 
 

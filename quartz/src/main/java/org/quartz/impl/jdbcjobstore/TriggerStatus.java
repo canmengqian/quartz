@@ -45,8 +45,10 @@ public class TriggerStatus {
 
     private JobKey jobKey;
 
+    // 当前trigger的状态
     private String status;
-    
+
+    // 下次触发时间
     private Date nextFireTime;
 
     /*

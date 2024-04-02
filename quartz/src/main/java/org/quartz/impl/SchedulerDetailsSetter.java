@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.quartz.SchedulerException;
 
 /**
+ * 该实用程序在给定对象上反射性地调用方法，即使这些方法可能位于适当的接口(ThreadPool、 JobStore 等)上。
+ * 其动机是为了容忍那些尚未针对接口中的更改进行更新的旧实现
  * This utility calls methods reflectively on the given objects even though the
  * methods are likely on a proper interface (ThreadPool, JobStore, etc). The
  * motivation is to be tolerant of older implementations that have not been
@@ -40,6 +42,13 @@ class SchedulerDetailsSetter {
         //
     }
 
+    /**
+     * 为目标对象设置名称和ID
+     * @param target
+     * @param schedulerName
+     * @param schedulerId
+     * @throws SchedulerException
+     */
     static void setDetails(Object target, String schedulerName,
             String schedulerId) throws SchedulerException {
         set(target, "setInstanceName", schedulerName);
@@ -62,6 +71,7 @@ class SchedulerDetailsSetter {
             return;
         }
 
+        // 如果方法抽象，则表示该方法未实现
         if (Modifier.isAbstract(setter.getModifiers())) {
             // expected if method not implemented (but is present on
             // interface)
@@ -72,6 +82,7 @@ class SchedulerDetailsSetter {
         }
 
         try {
+            // 调用方法,一般是set方法
             setter.invoke(target, value);
         } catch (InvocationTargetException ite) {
             throw new SchedulerException(ite.getTargetException());

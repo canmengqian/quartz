@@ -23,6 +23,7 @@ import org.quartz.Calendar;
 import org.quartz.JobDetail;
 
 /**
+ * 维护了trigger执行完成之后的所有信息
  * <p>
  * A simple class (structure) used for returning execution-time data from the
  * JobStore to the <code>QuartzSchedulerThread</code>.

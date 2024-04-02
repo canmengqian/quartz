@@ -62,6 +62,7 @@ public class StdJobRunShellFactory implements JobRunShellFactory {
     }
 
     /**
+     * // 用于创建一个JobRunShell
      * <p>
      * Called by the <code>{@link org.quartz.core.QuartzSchedulerThread}</code>
      * to obtain instances of <code>{@link org.quartz.core.JobRunShell}</code>.

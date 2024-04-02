@@ -28,6 +28,7 @@ import org.quartz.spi.ThreadExecutor;
 import org.quartz.spi.ThreadPool;
 
 /**
+ * 维护了QuartzScheduler 所需要的资源数据
  * <p>
  * Contains all of the resources (<code>JobStore</code>,<code>ThreadPool</code>,
  * etc.) necessary to create a <code>{@link QuartzScheduler}</code> instance.
@@ -47,16 +48,21 @@ public class QuartzSchedulerResources {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
+    /**
+     * 脚本初始化策略
+     */
     public static final String CREATE_REGISTRY_NEVER = "never";
 
     public static final String CREATE_REGISTRY_ALWAYS = "always";
 
     public static final String CREATE_REGISTRY_AS_NEEDED = "as_needed";
 
+    // 调度器名称
     private String name;
+    // 调度器实例ID
 
     private String instanceId;
-
+    // 调度器线程名称
     private String threadName;
     
     private String rmiRegistryHost = null;
@@ -67,14 +73,19 @@ public class QuartzSchedulerResources {
 
     private String rmiCreateRegistryStrategy = CREATE_REGISTRY_NEVER;
 
+    // 调度器依赖的线程池
     private ThreadPool threadPool;
 
+    // 调度器依赖的JobStore
     private JobStore jobStore;
 
+    // 调度器依赖的JobRunShellFactory
     private JobRunShellFactory jobRunShellFactory;
 
+    // 调度器依赖的SchedulerPlugin
     private List<SchedulerPlugin> schedulerPlugins = new ArrayList<SchedulerPlugin>(10);
-    
+
+    // 是否是守护线程
     private boolean makeSchedulerThreadDaemon = false;
 
     private boolean threadsInheritInitializersClassLoadContext = false;
@@ -87,13 +98,16 @@ public class QuartzSchedulerResources {
 
     private ManagementRESTServiceConfiguration managementRESTServiceConfiguration;
 
+    // 用于调度QuartzScheduler
     private ThreadExecutor threadExecutor;
 
     private long batchTimeWindow = 0;
 
     private int maxBatchSize = 1;
 
+    // 调度器关闭时是否中断正在执行的任务
     private boolean interruptJobsOnShutdown = false;
+    // 调度器关闭时是否等待正在执行的任务执行完毕
     private boolean interruptJobsOnShutdownWithWait = false;
     
     /*

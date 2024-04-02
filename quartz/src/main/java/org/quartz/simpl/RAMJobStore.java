@@ -1822,6 +1822,7 @@ class TriggerWrapper {
 
     public final OperableTrigger trigger;
 
+    // 默认状态
     public int state = STATE_WAITING;
 
     public static final int STATE_WAITING = 0;

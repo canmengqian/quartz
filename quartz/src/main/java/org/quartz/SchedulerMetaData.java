@@ -21,6 +21,7 @@ package org.quartz;
 import java.util.Date;
 
 /**
+ * 调度器元数据
  * Describes the settings and capabilities of a given <code>{@link Scheduler}</code>
  * instance.
  * 
@@ -37,35 +38,48 @@ public class SchedulerMetaData implements java.io.Serializable {
      * 
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
-
+    // 调度器名称
     private String schedName;
 
+    // 调度器实例id
     private String schedInst;
 
+    // 调度器类class
     private Class<?> schedClass;
 
+    // 调度器是否是远程调度器
     private boolean isRemote;
 
+    // 调度器是否启动
     private boolean started;
-
+    // 调度器是否处于待机模式
     private boolean isInStandbyMode;
 
+    // 调度器是否关闭
     private boolean shutdown;
 
+    // 调度器启动时间
     private Date startTime;
 
+    // 调度器启动后执行任务数
     private int numJobsExec;
 
+    // 调度器是否持久化
     private Class<?> jsClass;
 
+    // 调度器是否持久化
     private boolean jsPersistent;
 
+    // 调度器是否集群
     private boolean jsClustered;
 
+    // 调度器使用的线程池
     private Class<?> tpClass;
 
+    // 调度器使用的线程池大小
     private int tpSize;
 
+    // quartz版本
     private String version;
 
     /*

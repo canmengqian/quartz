@@ -28,6 +28,7 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
+ * 通过ServletContextListener初始化Quartz
  * <p>
  * A ServletContextListner that can be used to initialize Quartz.
  * </p>
@@ -147,7 +148,7 @@ public class QuartzInitializerListener implements ServletContextListener {
         ServletContext servletContext = sce.getServletContext();
         StdSchedulerFactory factory;
         try {
-
+            // 查找配置文件
             String configFile = servletContext.getInitParameter("quartz:config-file");
             if(configFile == null)
                 configFile = servletContext.getInitParameter("config-file"); // older name, for backward compatibility
@@ -162,6 +163,7 @@ public class QuartzInitializerListener implements ServletContextListener {
                 waitOnShutdown = Boolean.valueOf(shutdownWaitPref).booleanValue();
             }
 
+            // 根据配置文件创建工厂
             factory = getSchedulerFactory(configFile);
 
             // Always want to get the scheduler, even if it isn't starting, 

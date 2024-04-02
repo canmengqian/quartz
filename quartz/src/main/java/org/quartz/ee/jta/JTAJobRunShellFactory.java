@@ -26,6 +26,10 @@ import org.quartz.core.JobRunShellFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
 /**
+ * 带有分布式事务的JobRunShell工厂
+ *
+ * 负责创建要在 org.Quartz.core. QuartzScheduler 实例中使用的 JTAJobRunShell 实例。
+ * 这个实现不重用任何对象，只是在每次调用 JobRunShell ()时创建一个新的 JTAJobRunShell。
  * <p>
  * Responsible for creating the instances of <code>{@link org.quartz.ee.jta.JTAJobRunShell}</code>
  * to be used within the <code>{@link org.quartz.core.QuartzScheduler}</code> instance.

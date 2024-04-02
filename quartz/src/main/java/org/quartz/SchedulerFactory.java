@@ -40,6 +40,7 @@ public interface SchedulerFactory {
      */
 
     /**
+     * 获取Scheduler
      * <p>
      * Returns a client-usable handle to a <code>Scheduler</code>.
      * </p>
@@ -50,6 +51,7 @@ public interface SchedulerFactory {
     Scheduler getScheduler() throws SchedulerException;
 
     /**
+     * 根据名称获取Scheduler
      * <p>
      * Returns a handle to the Scheduler with the given name, if it exists.
      * </p>
@@ -57,6 +59,7 @@ public interface SchedulerFactory {
     Scheduler getScheduler(String schedName) throws SchedulerException;
 
     /**
+     * 获取所有Scheduler
      * <p>
      * Returns handles to all known Schedulers (made by any SchedulerFactory
      * within this jvm.).

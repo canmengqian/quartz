@@ -48,6 +48,7 @@ import java.io.Serializable;
  */
 public interface JobDetail extends Serializable, Cloneable {
 
+    // 获取JobKey
     public JobKey getKey();
 
     /**
@@ -60,6 +61,7 @@ public interface JobDetail extends Serializable, Cloneable {
      */
     public String getDescription();
 
+    // 获取真实业务job对应的类
     /**
      * <p>
      * Get the instance of <code>Job</code> that will be executed.
@@ -67,6 +69,7 @@ public interface JobDetail extends Serializable, Cloneable {
      */
     public Class<? extends Job> getJobClass();
 
+    // 获取JobDataMap
     /**
      * <p>
      * Get the <code>JobDataMap</code> that is associated with the <code>Job</code>.
@@ -74,6 +77,7 @@ public interface JobDetail extends Serializable, Cloneable {
      */
     public JobDataMap getJobDataMap();
 
+    // job是否持久化
     /**
      * <p>
      * Whether or not the <code>Job</code> should remain stored after it is
@@ -89,18 +93,21 @@ public interface JobDetail extends Serializable, Cloneable {
      */
     public boolean isDurable();
 
+    // 在job执行后是否持久化jobDataMap
     /**
      * @see PersistJobDataAfterExecution
      * @return whether the associated Job class carries the {@link PersistJobDataAfterExecution} annotation.
      */
     public boolean isPersistJobDataAfterExecution();
 
+    // job是否禁止并发执行
     /**
      * @see DisallowConcurrentExecution
      * @return whether the associated Job class carries the {@link DisallowConcurrentExecution} annotation.
      */
     public boolean isConcurrentExectionDisallowed();
 
+    // job是否允许被恢复
     /**
      * <p>
      * Instructs the <code>Scheduler</code> whether or not the <code>Job</code>
@@ -117,7 +124,8 @@ public interface JobDetail extends Serializable, Cloneable {
     public boolean requestsRecovery();
 
     public Object clone();
-    
+
+    // 获取JobBuilder构建器
     /**
      * Get a {@link JobBuilder} that is configured to produce a 
      * <code>JobDetail</code> identical to this one.

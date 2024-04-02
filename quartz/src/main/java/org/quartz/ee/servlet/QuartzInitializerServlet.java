@@ -30,6 +30,11 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
+ * Servlet模式启动
+ * 一个 Servlet，如果在 Web 应用程序中配置为启动时加载的 Servlet，则可用于初始化 Quartz。
+ * 在某些情况下，与使用 QuartzInitializerListener 相比，使用这个启动 servlet 可能更为可取——也就是说，
+ * 当您希望在同一个应用程序中初始化多个调度程序时。
+ * 您需要在 WEB-INF/web.xml 文件中添加类似的内容:
  * <p>
  * A Servlet that can be used to initialize Quartz, if configured as a
  * load-on-startup servlet in a web application.
@@ -144,9 +149,12 @@ public class QuartzInitializerServlet extends HttpServlet {
 
     public static final String QUARTZ_FACTORY_KEY = "org.quartz.impl.StdSchedulerFactory.KEY";
 
+
     private boolean performShutdown = true;
+    // 关闭qrtz时候是否等待
     private boolean waitOnShutdown = false;
 
+    // 调度器实例
     private transient Scheduler scheduler = null;
 
 
@@ -164,6 +172,7 @@ public class QuartzInitializerServlet extends HttpServlet {
 
         log("Quartz Initializer Servlet loaded, initializing Scheduler...");
 
+        // 调度器工厂
         StdSchedulerFactory factory;
         try {
 
@@ -182,12 +191,14 @@ public class QuartzInitializerServlet extends HttpServlet {
             
             // Always want to get the scheduler, even if it isn't starting, 
             // to make sure it is both initialized and registered.
+            // 创建调度器
             scheduler = factory.getScheduler();
             
             // Should the Scheduler being started now or later
             String startOnLoad = cfg
                     .getInitParameter("start-scheduler-on-load");
 
+            // 是否进行延迟启动调度
             int startDelay = 0;
             String startDelayS = cfg.getInitParameter("start-delay-seconds");
             try {
@@ -243,6 +254,7 @@ public class QuartzInitializerServlet extends HttpServlet {
 
     protected StdSchedulerFactory getSchedulerFactory(String configFile)
             throws SchedulerException {
+        // 使用标准调度器工厂进行初始化
         StdSchedulerFactory factory;
         // get Properties
         if (configFile != null) {

@@ -21,6 +21,7 @@ import org.quartz.impl.JobDetailImpl;
 import org.quartz.utils.Key;
 
 /**
+ * 通过JobBuilder构建JobDetail
  * <code>JobBuilder</code> is used to instantiate {@link JobDetail}s.
  * 
  * <p>The builder will always try to keep itself in a valid state, with 
@@ -61,7 +62,9 @@ public class JobBuilder {
     private JobKey key;
     private String description;
     private Class<? extends Job> jobClass;
+    // 是否持久化
     private boolean durability;
+    // 是否恢复
     private boolean shouldRecover;
     
     private JobDataMap jobDataMap = new JobDataMap();
