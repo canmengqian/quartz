@@ -38,13 +38,21 @@ public class DailyCalendar extends BaseCalendar {
     private static final long oneMillis = 1;
     private static final String colon = ":";
 
+    // 一天中的起始时
     private int rangeStartingHourOfDay;
+    // 一天中的起始分钟
     private int rangeStartingMinute;
+    // 一天中的起始秒
     private int rangeStartingSecond;
+    // 一天中的 起始毫秒
     private int rangeStartingMillis;
+    // 一天中的结束时
     private int rangeEndingHourOfDay;
+    // 一天中的结束时分
     private int rangeEndingMinute;
+   // 一天中的结束秒
     private int rangeEndingSecond;
+    // 一天中的结束毫秒
     private int rangeEndingMillis;
     
     private boolean invertTimeRange = false;

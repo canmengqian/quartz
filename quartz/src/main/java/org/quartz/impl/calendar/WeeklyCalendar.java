@@ -149,17 +149,19 @@ public class WeeklyCalendar extends BaseCalendar implements Calendar,
      */
     @Override
     public boolean isTimeIncluded(long timeStamp) {
+        // 开启全局开关，所有的时间都排除，不作job执行
         if (excludeAll == true) {
             return false;
         }
 
         // Test the base calendar first. Only if the base calendar not already
         // excludes the time/date, continue evaluating this calendar instance.
+        // 在其他日历里也排除了,也不做执行
         if (super.isTimeIncluded(timeStamp) == false) { return false; }
 
         java.util.Calendar cl = createJavaCalendar(timeStamp);
         int wday = cl.get(java.util.Calendar.DAY_OF_WEEK);
-
+        // false说明指定日期可以执行
         return !(isDayExcluded(wday));
     }
 
@@ -176,26 +178,34 @@ public class WeeklyCalendar extends BaseCalendar implements Calendar,
      */
     @Override
     public long getNextIncludedTime(long timeStamp) {
+        // 开启全局开关，所有的时间都排除，不作job执行
         if (excludeAll == true) {
             return 0;
         }
 
         // Call base calendar implementation first
+        // 如果在base日历里，则返回base日历的时间
         long baseTime = super.getNextIncludedTime(timeStamp);
         if ((baseTime > 0) && (baseTime > timeStamp)) {
             timeStamp = baseTime;
         }
 
+        // 获取当天的起始时间
         // Get timestamp for 00:00:00
         java.util.Calendar cl = getStartOfDayJavaCalendar(timeStamp);
+        // 获取当天是周几
         int wday = cl.get(java.util.Calendar.DAY_OF_WEEK);
 
+        // 如果当天可以执行，则返回当天的时间
         if (!isDayExcluded(wday)) {
             return timeStamp; // return the original value
         }
 
+        // 否则，则从当天开始，往后遍历，找到可以执行的时间
+        cl.add(java.util.Calendar.DATE, 1);
         while (isDayExcluded(wday) == true) {
             cl.add(java.util.Calendar.DATE, 1);
+            // 获取当天是周几
             wday = cl.get(java.util.Calendar.DAY_OF_WEEK);
         }
 

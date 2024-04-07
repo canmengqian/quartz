@@ -30,6 +30,7 @@ import org.quartz.utils.Key;
  */
 public interface Matcher<T extends Key<?>> extends Serializable {
 
+    // 实现对key的匹配
     boolean isMatch(T key);
  
     public int hashCode();

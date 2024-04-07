@@ -21,6 +21,11 @@ subprojects {
 }
 
 allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile){
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
     plugins.withType(JavaBasePlugin) {
         java {
             toolchain {
@@ -105,6 +110,10 @@ allprojects {
 
     // Put pom.xml and pom.properties in the jar:
     project.afterEvaluate{p ->
+
+        tasks.withType(Javadoc) {
+            enabled =false
+        }
         // module.json publishing confuses sonatype and it doesn't process the jar.
         tasks.withType(GenerateModuleMetadata) {
             enabled = false

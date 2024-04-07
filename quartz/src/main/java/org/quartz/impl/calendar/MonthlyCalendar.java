@@ -29,20 +29,22 @@ import org.quartz.Calendar;
  * any day of a month.
  * </p>
  *
+ * @author Juergen Donnerstag
  * @see org.quartz.Calendar
  * @see org.quartz.impl.calendar.BaseCalendar
- *
- * @author Juergen Donnerstag
  */
 public class MonthlyCalendar extends BaseCalendar implements Calendar,
         Serializable {
 
     static final long serialVersionUID = 419164961091807944L;
 
+    // 最大的月份天数
     private static final int MAX_DAYS_IN_MONTH = 31;
 
+    // 每个月份里的排除天数
     // An array to store a months days which are to be excluded.
     // java.util.Calendar.get( ) as index.
+    // 一个数组，用于存储将被排除在外的月份天数. java.util. Calendar.get ()作为索引。
     private boolean[] excludeDays = new boolean[MAX_DAYS_IN_MONTH];
 
     // Will be set to true, if all week days are excluded
@@ -95,9 +97,10 @@ public class MonthlyCalendar extends BaseCalendar implements Calendar,
     public boolean isDayExcluded(int day) {
         if ((day < 1) || (day > MAX_DAYS_IN_MONTH)) {
             throw new IllegalArgumentException(
-                "The day parameter must be in the range of 1 to " + MAX_DAYS_IN_MONTH);
+                    "The day parameter must be in the range of 1 to " + MAX_DAYS_IN_MONTH);
         }
 
+        // 天数-1
         return excludeDays[day - 1];
     }
 
@@ -115,7 +118,7 @@ public class MonthlyCalendar extends BaseCalendar implements Calendar,
 
         if (days.length < MAX_DAYS_IN_MONTH) {
             throw new IllegalArgumentException(
-                "The days parameter must have a length of at least " + MAX_DAYS_IN_MONTH + " elements.");
+                    "The days parameter must have a length of at least " + MAX_DAYS_IN_MONTH + " elements.");
         }
 
         excludeDays = days;
@@ -133,10 +136,12 @@ public class MonthlyCalendar extends BaseCalendar implements Calendar,
     public void setDayExcluded(int day, boolean exclude) {
         if ((day < 1) || (day > MAX_DAYS_IN_MONTH)) {
             throw new IllegalArgumentException(
-                "The day parameter must be in the range of 1 to " + MAX_DAYS_IN_MONTH);
+                    "The day parameter must be in the range of 1 to " + MAX_DAYS_IN_MONTH);
         }
 
+        // 设置指定天数是否可以执行
         excludeDays[day - 1] = exclude;
+        // 设置全局执行标签
         excludeAll = areAllDaysExcluded();
     }
 
@@ -173,7 +178,9 @@ public class MonthlyCalendar extends BaseCalendar implements Calendar,
 
         // Test the base calendar first. Only if the base calendar not already
         // excludes the time/date, continue evaluating this calendar instance.
-        if (super.isTimeIncluded(timeStamp) == false) { return false; }
+        if (super.isTimeIncluded(timeStamp) == false) {
+            return false;
+        }
 
         java.util.Calendar cl = createJavaCalendar(timeStamp);
         int day = cl.get(java.util.Calendar.DAY_OF_MONTH);

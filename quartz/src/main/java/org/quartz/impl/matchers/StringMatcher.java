@@ -72,6 +72,7 @@ public abstract class StringMatcher<T extends Key<?>> implements Matcher<T> {
     protected StringOperatorName compareWith;
     
     protected StringMatcher(String compareTo, StringOperatorName compareWith) {
+        // A 操作算子 EQUALS, STARTS_WITH, ENDS_WITH, CONTAINS, ANYTHING内置算子和自定算子
         if(compareTo == null)
             throw new IllegalArgumentException("CompareTo value cannot be null!");
         if(compareWith == null)
@@ -84,7 +85,7 @@ public abstract class StringMatcher<T extends Key<?>> implements Matcher<T> {
     protected abstract String getValue(T key);
     
     public boolean isMatch(T key) {
-
+        // 算子进行计算 (key得到的value 和 compareTo进行比较)
         return compareWith.evaluate(getValue(key), compareTo);
     }
 

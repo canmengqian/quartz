@@ -28,7 +28,9 @@ public class OrMatcher<T extends Key<?>> implements Matcher<T> {
   
     private static final long serialVersionUID = -2867392824539403712L;
 
+    // 左边运算
     protected Matcher<T> leftOperand;
+    // 右边运算
     protected Matcher<T> rightOperand;
     
     protected OrMatcher(Matcher<T> leftOperand, Matcher<T> rightOperand) {
@@ -47,7 +49,7 @@ public class OrMatcher<T extends Key<?>> implements Matcher<T> {
     }
 
     public boolean isMatch(T key) {
-
+            // 左右比较使用 ||运算连接
         return leftOperand.isMatch(key) || rightOperand.isMatch(key);
     }
 

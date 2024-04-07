@@ -48,6 +48,7 @@ public class EverythingMatcher<T extends Key<?>> implements Matcher<T> {
     }
     
     public boolean isMatch(T key) {
+        // 永远比较成功
         return true;
     }
 

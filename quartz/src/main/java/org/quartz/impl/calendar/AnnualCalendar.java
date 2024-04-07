@@ -94,8 +94,9 @@ public class AnnualCalendar extends BaseCalendar implements Calendar,
         if (! super.isTimeIncluded(day.getTime().getTime())) {
          return true;
         } 
-        
+        // 获取月份
         int dmonth = day.get(java.util.Calendar.MONTH);
+        // 获取每月所在的天数
         int dday = day.get(java.util.Calendar.DAY_OF_MONTH);
 
         if (dataSorted == false) {

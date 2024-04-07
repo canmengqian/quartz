@@ -47,7 +47,7 @@ public class AndMatcher<T extends Key<?>> implements Matcher<T> {
     }
 
     public boolean isMatch(T key) {
-
+        // 两个运算间使用 && 比较
         return leftOperand.isMatch(key) && rightOperand.isMatch(key);
     }
 

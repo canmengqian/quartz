@@ -43,6 +43,7 @@ public class KeyMatcher<T extends Key<?>> implements Matcher<T> {
 
     public boolean isMatch(T key) {
 
+        // equal比较,需要重新equal方法
         return compareTo.equals(key);
     }
 

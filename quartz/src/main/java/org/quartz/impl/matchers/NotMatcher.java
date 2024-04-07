@@ -28,6 +28,7 @@ public class NotMatcher<T extends Key<?>> implements Matcher<T> {
   
     private static final long serialVersionUID = -2856769076151741391L;
 
+    // 单一运算
     protected Matcher<T> operand;
     
     protected NotMatcher(Matcher<T> operand) {
@@ -46,6 +47,7 @@ public class NotMatcher<T extends Key<?>> implements Matcher<T> {
 
     public boolean isMatch(T key) {
 
+        // 使用非运算判断
         return !operand.isMatch(key);
     }
 
