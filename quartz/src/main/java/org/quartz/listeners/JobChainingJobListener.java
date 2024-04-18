@@ -84,6 +84,7 @@ public class JobChainingJobListener extends JobListenerSupport {
         chainLinks.put(firstJob, secondJob);
     }
 
+    // 链式执行
     @Override
     public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
 

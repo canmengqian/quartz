@@ -95,15 +95,25 @@ public class SchedulerMetaData implements java.io.Serializable {
             boolean isInStandbyMode, boolean shutdown, Date startTime, int numJobsExec,
             Class<?> jsClass, boolean jsPersistent, boolean jsClustered, Class<?> tpClass, int tpSize,
             String version) {
+        // 设置调度器名称
         this.schedName = schedName;
+        // 设置调度器实例id
         this.schedInst = schedInst;
+        // 设置调度器类class
         this.schedClass = schedClass;
+        // 设置调度器是否是远程调度器
         this.isRemote = isRemote;
+        // 设置调度器是否启动
         this.started = started;
+        // 设置调度器是否处于待机模式
         this.isInStandbyMode = isInStandbyMode;
+        // 设置调度器是否关闭
         this.shutdown = shutdown;
+        // 设置调度器启动时间
         this.startTime = startTime;
+        // 设置调度器启动后执行任务数
         this.numJobsExec = numJobsExec;
+
         this.jsClass = jsClass;
         this.jsPersistent = jsPersistent;
         this.jsClustered = jsClustered;

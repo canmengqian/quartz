@@ -30,6 +30,7 @@ import org.quartz.listeners.BroadcastSchedulerListener;
 import org.quartz.listeners.SchedulerListenerSupport;
 
 /**
+ * 翻译: 测试 SchedulerListener
  * Test that verifies that schedulerStarting() is called before the schedulerStarted()
  *  
  * 

@@ -21,6 +21,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
+ * 提供线程/资源锁定，以便使用数据库行更新保护资源不被多个线程同时更改。
+ * 注意: 对于不支持通过“ SELECT FOR UPDATE”类型语法(例如 Microsoft SQLServer (MSSQL))进行行锁定的数据库，此信号量实现非常有用。
  * Provide thread/resource locking in order to protect
  * resources from being altered by multiple threads at the same time using
  * a db row update.
@@ -41,6 +43,9 @@ public class UpdateLockRowSemaphore extends DBSemaphore {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
+    /**
+     * SQL: Update LOCKS SET LOCK_NAME = LOCK_NAME WHERE SCHED_NAME = ? AND LOCK_NAME = ?
+     */
     public static final String UPDATE_FOR_LOCK = 
         "UPDATE " + TABLE_PREFIX_SUBST + TABLE_LOCKS + 
         " SET " + COL_LOCK_NAME + " = " + COL_LOCK_NAME +
@@ -48,6 +53,9 @@ public class UpdateLockRowSemaphore extends DBSemaphore {
         + " AND " + COL_LOCK_NAME + " = ? ";
 
 
+    /**
+     * SQL: INSERT INTO LOCKS (SCHED_NAME, LOCK_NAME) VALUES (?, ?)
+     */
     public static final String INSERT_LOCK = "INSERT INTO "
         + TABLE_PREFIX_SUBST + TABLE_LOCKS + "(" + COL_SCHEDULER_NAME + ", " + COL_LOCK_NAME + ") VALUES (" 
         + SCHED_NAME_SUBST + ", ?)"; 
@@ -82,24 +90,29 @@ public class UpdateLockRowSemaphore extends DBSemaphore {
         SQLException lastFailure = null;
         for (int i = 0; i < RETRY_COUNT; i++) {
             try {
+                // 更新不成功，则插入
                 if (!lockViaUpdate(conn, lockName, expandedSQL)) {
+                    // 写入锁信息
                     lockViaInsert(conn, lockName, expandedInsertSQL);
                 }
                 return;
             } catch (SQLException e) {
                 lastFailure = e;
                 if ((i + 1) == RETRY_COUNT) {
+                    // 重试次数用完,仍然失败,则抛出异常信息
                     getLog().debug("Lock '{}' was not obtained by: {}", lockName, Thread.currentThread().getName());
                 } else {
                     getLog().debug("Lock '{}' was not obtained by: {} - will try again.", lockName, Thread.currentThread().getName());
                 }
                 try {
+                    // 休眠1秒重试
                     Thread.sleep(1000L);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                 }
             }
         }
+        // 重试完成，仍然失败则抛出异常
         throw new LockException("Failure obtaining db row lock: " + lastFailure.getMessage(), lastFailure);
     }
     

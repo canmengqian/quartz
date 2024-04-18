@@ -39,6 +39,7 @@ public interface SchedulerListener {
      */
 
     /**
+     * trigger 被调度
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link org.quartz.JobDetail}</code>
      * is scheduled.
@@ -47,6 +48,7 @@ public interface SchedulerListener {
     void jobScheduled(Trigger trigger);
 
     /**
+     * trigger取消调度
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link org.quartz.JobDetail}</code>
      * is unscheduled.
@@ -57,6 +59,7 @@ public interface SchedulerListener {
     void jobUnscheduled(TriggerKey triggerKey);
 
     /**
+     * trigger 完成
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link Trigger}</code>
      * has reached the condition in which it will never fire again.
@@ -65,6 +68,7 @@ public interface SchedulerListener {
     void triggerFinalized(Trigger trigger);
 
     /**
+     * trigger暂停
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link Trigger}</code>
      * has been paused.
@@ -73,6 +77,7 @@ public interface SchedulerListener {
     void triggerPaused(TriggerKey triggerKey);
 
     /**
+     * trigger组暂停
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a 
      * group of <code>{@link Trigger}s</code> has been paused.
@@ -85,6 +90,7 @@ public interface SchedulerListener {
     void triggersPaused(String triggerGroup);
     
     /**
+     * 指定trigger恢复
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link Trigger}</code>
      * has been un-paused.
@@ -93,6 +99,7 @@ public interface SchedulerListener {
     void triggerResumed(TriggerKey triggerKey);
 
     /**
+     * 指定trigger组恢复
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a 
      * group of <code>{@link Trigger}s</code> has been un-paused.
@@ -101,6 +108,7 @@ public interface SchedulerListener {
     void triggersResumed(String triggerGroup);
 
     /**
+     * job添加
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link org.quartz.JobDetail}</code>
      * has been added.
@@ -109,6 +117,7 @@ public interface SchedulerListener {
     void jobAdded(JobDetail jobDetail);
     
     /**
+     * job删除
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link org.quartz.JobDetail}</code>
      * has been deleted.
@@ -117,6 +126,7 @@ public interface SchedulerListener {
     void jobDeleted(JobKey jobKey);
     
     /**
+     * job暂停
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link org.quartz.JobDetail}</code>
      * has been paused.
@@ -125,6 +135,7 @@ public interface SchedulerListener {
     void jobPaused(JobKey jobKey);
 
     /**
+     * job组暂停
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a 
      * group of <code>{@link org.quartz.JobDetail}s</code> has been paused.
@@ -135,6 +146,7 @@ public interface SchedulerListener {
     void jobsPaused(String jobGroup);
     
     /**
+     * job恢复
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link org.quartz.JobDetail}</code>
      * has been un-paused.
@@ -143,6 +155,7 @@ public interface SchedulerListener {
     void jobResumed(JobKey jobKey);
 
     /**
+     * job组恢复
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a 
      * group of <code>{@link org.quartz.JobDetail}s</code> has been un-paused.
@@ -151,6 +164,7 @@ public interface SchedulerListener {
     void jobsResumed(String jobGroup);
 
     /**
+     * 调度出错
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a serious error has
      * occurred within the scheduler - such as repeated failures in the <code>JobStore</code>,
@@ -167,6 +181,7 @@ public interface SchedulerListener {
     void schedulerError(String msg, SchedulerException cause);
 
     /**
+     * 调度器处于待机模式
      * <p>
      * Called by the <code>{@link Scheduler}</code> to inform the listener
      * that it has move to standby mode.
@@ -175,6 +190,7 @@ public interface SchedulerListener {
     void schedulerInStandbyMode();
 
     /**
+     * 调度器启动完成
      * <p>
      * Called by the <code>{@link Scheduler}</code> to inform the listener
      * that it has started.
@@ -183,6 +199,7 @@ public interface SchedulerListener {
     void schedulerStarted();
     
     /**
+     * 调度器启动中
      * <p>
      * Called by the <code>{@link Scheduler}</code> to inform the listener
      * that it is starting.
@@ -191,6 +208,7 @@ public interface SchedulerListener {
     void schedulerStarting();
     
     /**
+     * 调度器关闭
      * <p>
      * Called by the <code>{@link Scheduler}</code> to inform the listener
      * that it has shutdown.
@@ -199,6 +217,7 @@ public interface SchedulerListener {
     void schedulerShutdown();
     
     /**
+     * 调度器关闭中
      * <p>
      * Called by the <code>{@link Scheduler}</code> to inform the listener
      * that it has begun the shutdown sequence.
@@ -207,6 +226,7 @@ public interface SchedulerListener {
     void schedulerShuttingdown();
 
     /**
+     * 调度器数据清除
      * Called by the <code>{@link Scheduler}</code> to inform the listener
      * that all jobs, triggers and calendars were deleted.
      */

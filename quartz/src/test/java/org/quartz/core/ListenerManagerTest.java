@@ -34,7 +34,8 @@ import org.quartz.listeners.SchedulerListenerSupport;
 import org.quartz.listeners.TriggerListenerSupport;
 
 /**
- * Test ListenerManagerImpl functionality 
+ * Test ListenerManagerImpl functionality
+ * 用来测试 ListenerManagerImpl 添加、删除、获取监听器 ，包含JOB、TRIGGER、SCHEDULER三种监听器
  */
 public class ListenerManagerTest extends TestCase {
 
@@ -74,7 +75,8 @@ public class ListenerManagerTest extends TestCase {
     }
 
     public void testManagementOfJobListeners() throws Exception {
-        
+
+        // 自定义job监听器
         JobListener tl1 = new TestJobListener("tl1");
         JobListener tl2 = new TestJobListener("tl2");
         
@@ -82,6 +84,7 @@ public class ListenerManagerTest extends TestCase {
 
         // test adding listener without matcher
         manager.addJobListener(tl1);
+        // 测试管理的job监听器个数
         assertEquals("Unexpected size of listener list", 1, manager.getJobListeners().size());
 
         // test adding listener with matcher
@@ -97,6 +100,8 @@ public class ListenerManagerTest extends TestCase {
         assertEquals("Unexpected size of listener's matcher list", 2, manager.getJobListenerMatchers("tl2").size());
            
         // Test ordering of registration is preserved.
+
+        // 测试添加15个
         final int numListenersToTestOrderOf = 15;
         manager = new ListenerManagerImpl();
         JobListener[] lstners = new JobListener[numListenersToTestOrderOf];

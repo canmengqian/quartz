@@ -66,6 +66,7 @@ public interface Calendar extends java.io.Serializable, java.lang.Cloneable {
     void setBaseCalendar(Calendar baseCalendar);
 
     /**
+     * 获取基础日历
      * <p>
      * Get the base calendar. Will be null, if not set.
      * </p>
@@ -73,6 +74,7 @@ public interface Calendar extends java.io.Serializable, java.lang.Cloneable {
     Calendar getBaseCalendar();
 
     /**
+     * 当前时间戳是否在当前日历中
      * <p>
      * Determine whether the given time (in milliseconds) is 'included' by the
      * Calendar.
@@ -81,6 +83,7 @@ public interface Calendar extends java.io.Serializable, java.lang.Cloneable {
     boolean isTimeIncluded(long timeStamp);
 
     /**
+     * 获取下一个时间戳
      * <p>
      * Determine the next time (in milliseconds) that is 'included' by the
      * Calendar after the given time.
@@ -89,6 +92,7 @@ public interface Calendar extends java.io.Serializable, java.lang.Cloneable {
     long getNextIncludedTime(long timeStamp);
 
     /**
+     * 获取描述
      * <p>
      * Return the description given to the <code>Calendar</code> instance by
      * its creator (if any).
@@ -99,6 +103,7 @@ public interface Calendar extends java.io.Serializable, java.lang.Cloneable {
     String getDescription();
 
     /**
+     * 设置描述
      * <p>
      * Set a description for the <code>Calendar</code> instance - may be
      * useful for remembering/displaying the purpose of the calendar, though

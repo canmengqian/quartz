@@ -63,6 +63,13 @@ public interface Trigger extends Serializable, Cloneable, Comparable<Trigger> {
     public enum TriggerState { NONE, NORMAL, PAUSED, COMPLETE, ERROR, BLOCKED }
     
     /**
+     * NOOP 指示计划程序触发器没有进一步的指示。
+     * RE _ EXECUTE _ JOB 指示计划程序触发器希望 JobDetails 立即重新执行。如果不是在“ RECOVERING”或“ FAILED _ Over”情况下，执行上下文将被重用(使作业能够“查看”上下文中最后一次执行时放置的任何内容)。
+     * SET _ TRIGGER _ COMPLETE 指示调度程序应将触发器置于 COMPLETE 状态。
+     * DELETE _ TRIGGER 指示计划程序触发器希望自身删除。
+     * SET _ ALL _ JOB _ TRIGGERS _ COMPLETE 指示调度程序所有引用相同 JobDetails 的触发器都应该处于 COMPLETE 状态。
+     * SET _ TRIGGER _ ERROR 指示计划程序所有引用相同 JobDetails 的触发器都应该处于 ERROR 状态。
+     * SET _ ALL _ JOB _ TRIGGERS _ ERROR 指示调度程序应将触发器置于 ERROR 状态。
      * <p><code>NOOP</code> Instructs the <code>{@link Scheduler}</code> that the 
      * <code>{@link Trigger}</code> has no further instructions.</p>
      * 
@@ -236,6 +243,8 @@ public interface Trigger extends Serializable, Cloneable, Comparable<Trigger> {
     public Date getFinalFireTime();
 
     /**
+     * 返回计划触发器的下一次触发时间。如果触发器不会再次触发，则返回 null。请注意，如果为下一次触发计算的时间已经到达，但调度程序还不能触发触发器(这可能是由于缺乏资源，如线程) ，那么返回的时间可能是过去的。
+     * 直到将触发器添加到计划程序之后，才能保证返回的值是有效的。
      * Get the instruction the <code>Scheduler</code> should be given for
      * handling misfire situations for this <code>Trigger</code>- the
      * concrete <code>Trigger</code> type that you are using will have

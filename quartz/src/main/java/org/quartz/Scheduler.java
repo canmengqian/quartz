@@ -118,12 +118,14 @@ public interface Scheduler {
      */
 
     /**
+     * 默认的组
      * A (possibly) useful constant that can be used for specifying the group
      * that <code>Job</code> and <code>Trigger</code> instances belong to.
      */
     String DEFAULT_GROUP = Key.DEFAULT_GROUP;
 
     /**
+     * 恢复中的作业
      * A constant <code>Trigger</code> group name used internally by the
      * scheduler - clients should not use the value of this constant
      * ("RECOVERING_JOBS") for the name of a <code>Trigger</code>'s group.
@@ -133,6 +135,7 @@ public interface Scheduler {
     String DEFAULT_RECOVERY_GROUP = "RECOVERING_JOBS";
 
     /**
+     * 失败的作业
      * A constant <code>Trigger</code> group name used internally by the
      * scheduler - clients should not use the value of this constant
      * ("FAILED_OVER_JOBS") for the name of a <code>Trigger</code>'s group.
@@ -143,6 +146,7 @@ public interface Scheduler {
 
 
     /**
+     * 原始触发器名称
      * A constant <code>JobDataMap</code> key that can be used to retrieve the
      * name of the original <code>Trigger</code> from a recovery trigger's
      * data map in the case of a job recovering after a failed scheduler
@@ -153,6 +157,7 @@ public interface Scheduler {
     String FAILED_JOB_ORIGINAL_TRIGGER_NAME =  "QRTZ_FAILED_JOB_ORIG_TRIGGER_NAME";
 
     /**
+     * 原始的触发器组
      * A constant <code>JobDataMap</code> key that can be used to retrieve the
      * group of the original <code>Trigger</code> from a recovery trigger's
      * data map in the case of a job recovering after a failed scheduler
@@ -163,6 +168,7 @@ public interface Scheduler {
     String FAILED_JOB_ORIGINAL_TRIGGER_GROUP =  "QRTZ_FAILED_JOB_ORIG_TRIGGER_GROUP";
 
     /**
+     * 触发时间,在JobDataMap 存储
      * A constant <code>JobDataMap</code> key that can be used to retrieve the
      * fire time of the original <code>Trigger</code> from a recovery
      * trigger's data map in the case of a job recovering after a failed scheduler

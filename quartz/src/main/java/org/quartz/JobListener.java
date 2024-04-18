@@ -44,6 +44,7 @@ public interface JobListener {
      */
 
     /**
+     * 作业监听器名称
      * <p>
      * Get the name of the <code>JobListener</code>.
      * </p>
@@ -51,6 +52,7 @@ public interface JobListener {
     String getName();
 
     /**
+     * 作业将要被执行
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link org.quartz.JobDetail}</code>
      * is about to be executed (an associated <code>{@link Trigger}</code>
@@ -67,6 +69,7 @@ public interface JobListener {
     void jobToBeExecuted(JobExecutionContext context);
 
     /**
+     * 作业执行被否决
      * <p>
      * Called by the <code>{@link Scheduler}</code> when a <code>{@link org.quartz.JobDetail}</code>
      * was about to be executed (an associated <code>{@link Trigger}</code>
@@ -80,6 +83,7 @@ public interface JobListener {
 
     
     /**
+     * 作业被执行了
      * <p>
      * Called by the <code>{@link Scheduler}</code> after a <code>{@link org.quartz.JobDetail}</code>
      * has been executed, and be for the associated <code>Trigger</code>'s
