@@ -602,7 +602,7 @@ public class DirectSchedulerFactory implements SchedulerFactory {
 
         qs.addNoGCObject(schedRep); // prevents the repository from being
         // garbage collected
-
+        // 添加调度器到仓库中
         schedRep.bind(scheduler);
         
         initialized = true;

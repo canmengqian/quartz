@@ -197,12 +197,13 @@ public interface Scheduler {
      * 
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
-
+    // 获取调度器名称
     /**
      * Returns the name of the <code>Scheduler</code>.
      */
     String getSchedulerName() throws SchedulerException;
 
+    // 获取调度器实例id
     /**
      * Returns the instance Id of the <code>Scheduler</code>.
      */
@@ -451,6 +452,7 @@ public interface Scheduler {
      * @throws ObjectAlreadyExistsException if the job/trigger keys
      * are not unique and the replace flag is not set to true. 
      */
+    // 仅添加一个job-trigger关系对
     void scheduleJob(JobDetail jobDetail, Set<? extends Trigger> triggersForJob, boolean replace) throws SchedulerException;
     
     /**

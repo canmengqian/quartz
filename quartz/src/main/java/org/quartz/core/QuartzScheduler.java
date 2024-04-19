@@ -1026,7 +1026,9 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
         validateState();
         // 一个JOB对应多个Trigger
         // make sure all triggers refer to their associated job
+        // 循环处理job 和 trigger关系对
         for(Entry<JobDetail, Set<? extends Trigger>> e: triggersAndJobs.entrySet()) {
+            // job为空就跳过当前的关系对了
             JobDetail job = e.getKey();
             if(job == null) // there can be one of these (for adding a bulk set of triggers for pre-existing jobs)
                 continue;
@@ -1056,11 +1058,14 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
             }
         }
 
+        // 批量存储关系对
         resources.getJobStore().storeJobsAndTriggers(triggersAndJobs, replace);
+        // TODO 为什么设置成0
         notifySchedulerThread(0L);
         for (JobDetail job : triggersAndJobs.keySet()) {
+            // 通知监听器job已经加入进来了
           notifySchedulerListenersJobAdded(job);
-
+            // 通知监听器trigger已经加入进来了
           Set<? extends Trigger> triggers = triggersAndJobs.get(job);
           for (Trigger trigger : triggers) {
             notifySchedulerListenersSchduled(trigger);
@@ -1096,9 +1101,11 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
      */
     public boolean unscheduleJob(TriggerKey triggerKey) throws SchedulerException {
         validateState();
-
+        // 移除trigger
         if (resources.getJobStore().removeTrigger(triggerKey)) {
+            // 立刻通知调度器
             notifySchedulerThread(0L);
+            // 通知监听器trigger被卸载了
             notifySchedulerListenersUnscheduled(triggerKey);
         } else {
             return false;
