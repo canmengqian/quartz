@@ -584,6 +584,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
      */
     @Override
     public Date computeFirstFireTime(org.quartz.Calendar calendar) {
+        // 获取启动时间
         nextFireTime = getStartTime();
 
         while (nextFireTime != null && calendar != null
@@ -597,6 +598,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
             //avoid infinite loop
             java.util.Calendar c = java.util.Calendar.getInstance();
             c.setTime(nextFireTime);
+            // 默认100年才会放弃
             if (c.get(java.util.Calendar.YEAR) > YEAR_TO_GIVEUP_SCHEDULING_AT) {
                 return null;
             }
@@ -674,6 +676,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
     }
     
     protected Date getFireTimeAfter(Date afterTime, boolean ignoreEndTime) {
+        // 已经完结了就没有下次执行时间了
         if (complete) {
             return null;
         }
@@ -684,59 +687,77 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
             afterTime = new Date();
         }
 
+        // 起始毫秒数
         long startMillis = getStartTime().getTime();
+        // 下次时间的毫秒数
         long afterMillis = afterTime.getTime();
+        // 结束时间毫秒数
         long endMillis = (getEndTime() == null) ? Long.MAX_VALUE : getEndTime()
                 .getTime();
 
+        // 下次时间>结束时间 调度结束
         if (!ignoreEndTime && (endMillis <= afterMillis)) {
             return null;
         }
 
+        // 起始时间> 下次执行时间 ,则为起始时间
         if (afterMillis < startMillis) {
             return new Date(startMillis);
         }
-
+        // 在间隔时间内加1秒
         
         long secondsAfterStart = 1 + (afterMillis - startMillis) / 1000L;
 
         Date time = null;
+        // 获取间隔时间
         long repeatLong = getRepeatInterval();
-        
+        // 设置下次执行时间的日历对象
         Calendar aTime = Calendar.getInstance();
         aTime.setTime(afterTime);
 
         Calendar sTime = Calendar.getInstance();
+        // 设置时区
         if(timeZone != null)
             sTime.setTimeZone(timeZone);
+        // 设置起始时间
         sTime.setTime(getStartTime());
+        // TODO
         sTime.setLenient(true);
-        
+
+        // 间隔单位是秒
         if(getRepeatIntervalUnit().equals(IntervalUnit.SECOND)) {
+            // 执行次数= 两次时间差值/ 间隔时间
             long jumpCount = secondsAfterStart / repeatLong;
+            // 补全执行次数
             if(secondsAfterStart % repeatLong != 0)
                 jumpCount++;
+            // 重置下次执行时间
             sTime.add(Calendar.SECOND, getRepeatInterval() * (int)jumpCount);
             time = sTime.getTime();
         }
+        // 如果是分钟
         else if(getRepeatIntervalUnit().equals(IntervalUnit.MINUTE)) {
+            // 按分钟修复下次执行时间
             long jumpCount = secondsAfterStart / (repeatLong * 60L);
             if(secondsAfterStart % (repeatLong * 60L) != 0)
                 jumpCount++;
             sTime.add(Calendar.MINUTE, getRepeatInterval() * (int)jumpCount);
             time = sTime.getTime();
         }
+        // 如果是小时
         else if(getRepeatIntervalUnit().equals(IntervalUnit.HOUR)) {
+            // 按小时修复下次执行时间
             long jumpCount = secondsAfterStart / (repeatLong * 60L * 60L);
             if(secondsAfterStart % (repeatLong * 60L * 60L) != 0)
                 jumpCount++;
             sTime.add(Calendar.HOUR_OF_DAY, getRepeatInterval() * (int)jumpCount);
             time = sTime.getTime();
         }
+        // 如果是天
         else { // intervals a day or greater ...
-
+            // 获取一天所在的小时
             int initialHourOfDay = sTime.get(Calendar.HOUR_OF_DAY);
-            
+            // 间隔为天的话
             if(getRepeatIntervalUnit().equals(IntervalUnit.DAY)) {
                 sTime.setLenient(true);
                 
@@ -748,20 +769,26 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
                 // than slowly crawling our way there by iteratively adding the 
                 // increment to the start time until we reach the "after time",
                 // we can first make a big leap most of the way there...
-                
+                // 按秒进行换算
                 long jumpCount = secondsAfterStart / (repeatLong * 24L * 60L * 60L);
                 // if we need to make a big jump, jump most of the way there, 
                 // but not all the way because in some cases we may over-shoot or under-shoot
                 if(jumpCount > 20) {
+                    // 执行次数 > 20 && <50
                     if(jumpCount < 50)
+                        // 执行次数 * 0.8
                         jumpCount = (long) (jumpCount * 0.80);
                     else if(jumpCount < 500)
+                            // 执行次数 * 0.9
                         jumpCount = (long) (jumpCount * 0.90);
                     else
+                        // 执行次数 * 0.95
                         jumpCount = (long) (jumpCount * 0.95);
+                    // 按天数进行换算
                     sTime.add(java.util.Calendar.DAY_OF_YEAR, (int) (getRepeatInterval() * jumpCount));
                 }
-                
+
+                // 按天进行累加
                 // now baby-step the rest of the way there...
                 while(!sTime.getTime().after(afterTime) &&
                         (sTime.get(java.util.Calendar.YEAR) < YEAR_TO_GIVEUP_SCHEDULING_AT)) {            
@@ -773,6 +800,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
                 }
                 time = sTime.getTime();
             }
+            // 如果是周
             else if(getRepeatIntervalUnit().equals(IntervalUnit.WEEK)) {
                 sTime.setLenient(true);
     
@@ -808,6 +836,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
                 }
                 time = sTime.getTime();
             }
+            // 如果是月
             else if(getRepeatIntervalUnit().equals(IntervalUnit.MONTH)) {
                 sTime.setLenient(true);
     
@@ -825,6 +854,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
                 }
                 time = sTime.getTime();
             }
+            // 如果是年
             else if(getRepeatIntervalUnit().equals(IntervalUnit.YEAR)) {
     
                 while(!sTime.getTime().after(afterTime) &&
@@ -838,7 +868,7 @@ public class CalendarIntervalTriggerImpl extends AbstractTrigger<CalendarInterva
                 time = sTime.getTime();
             }
         } // case of interval of a day or greater
-        
+        // 如果下次执行时间> 结束时间，则不做调度了
         if (!ignoreEndTime && (endMillis <= time.getTime())) {
             return null;
         }

@@ -33,6 +33,14 @@ import org.quartz.Trigger;
 import org.quartz.DateBuilder.IntervalUnit;
 
 /**
+ * DailyTimeIntervalTrigger 的一个具体实现，用于根据每日重复的时间间隔激发 org.starsin.JobDetail。
+ * 触发器将每 N 秒、每分钟或每小时触发一次(参见 setRepateIntervalUnit (DateBuilder))。(IntervalUnit))在一周中指定的日子里，在给定的时间窗内。
+ * 例如 # 1，一个触发器可以设置为每天8:00到11:00之间每72分钟触发一次。开火时间是8:009:1210:24然后第二天又会重复8:009:1210:24。
+ * 例如 # 2，可以将触发器设置为在周一到周五的9:20到16:47之间每23分钟触发一次。
+ * 在每一天，启动发射时间被重置为 startTimeOfDay 值，然后它将向其添加 repeat atInterval 值，直到达到 endTimeOfDay。如果设置 daysOfWeek 值，那么开火时间只会出现在这些工作日期间。同样，请记住这个触发器将使用 startTimeOfDay 每天重置发射时间，而不管您的间隔或 endTimeOfDay！
+ * 如果没有设置，字段的默认值是: startTimeOfDay 默认为00:00:00，endTimeOfDay 默认为23:59:59，daysOfWeek 默认为每天。StartTime 现在默认为当前时间戳，而 endTime 没有值。
+ * 如果 startTime 位于 startTimeOfDay 之前，那么将使用 startTimeOfDay，startTime 除了指定触发的第一天之外没有其他影响。否则，如果 startTime 位于 startTimeOfDay 之后，那么该天的第一次触发时间将是 startTime 之后的下一个间隔。例如，如果设置 startingTimeOfDay = 上午9点，endingTimeOfDay = 上午11点，间隔时间 = 15分钟，startTime = 上午9:33，那么下一个发射时间将是晚上9:45。还要注意，如果不设置 startTime 值，则触发器构建器将默认设置为当前时间，并且当前时间可能在 startTimeOfDay 之前或之后！因此要注意如何设置起始时间。
+ * 这个触发器还支持“ repeat atCount”特性，以便在达到一定数量的计数后结束触发器触发时间。正如 SimpleTrigger 一样，设置 repatCount = 0意味着触发器将只触发一次！设置任何积极的计数，然后触发器将重复计数 + 1倍。与 SimpleTrigger 不同，这个触发器的 repatCount 的默认值设置为 REPEAT _ INDEFINITELY，而不是0。
  * A concrete implementation of DailyTimeIntervalTrigger that is used to fire a <code>{@link org.quartz.JobDetail}</code>
  * based upon daily repeating time intervals.
  * 

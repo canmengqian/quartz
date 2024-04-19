@@ -87,7 +87,7 @@ public class HolidayCalendar extends BaseCalendar implements Calendar,
         }
 
         Date lookFor = getStartOfDayJavaCalendar(timeStamp).getTime();
-
+        // 看看当天是否属于节假日
         return !(dates.contains(lookFor));
     }
 
@@ -106,13 +106,17 @@ public class HolidayCalendar extends BaseCalendar implements Calendar,
 
         // Call base calendar implementation first
         long baseTime = super.getNextIncludedTime(timeStamp);
+        // 选用计算出的时间代替当前时间
         if ((baseTime > 0) && (baseTime > timeStamp)) {
             timeStamp = baseTime;
         }
 
         // Get timestamp for 00:00:00
+        // 归为0点
         java.util.Calendar day = getStartOfDayJavaCalendar(timeStamp);
+        // false说明还在不可执行的日期里
         while (isTimeIncluded(day.getTime().getTime()) == false) {
+            // +1天
             day.add(java.util.Calendar.DATE, 1);
         }
 
@@ -120,11 +124,13 @@ public class HolidayCalendar extends BaseCalendar implements Calendar,
     }
 
     /**
+     * 要排除的日子
      * <p>
      * Add the given Date to the list of excluded days. Only the month, day and
      * year of the returned dates are significant.
      * </p>
      */
+
     public void addExcludedDate(Date excludedDate) {
         Date date = getStartOfDayJavaCalendar(excludedDate.getTime()).getTime();
         /*

@@ -286,12 +286,23 @@ public class LoggingJobHistoryPlugin implements SchedulerPlugin, JobListener {
 
     private String name;
 
+    /**
+     * job 被调用
+     */
     private String jobToBeFiredMessage = "Job {1}.{0} fired (by trigger {4}.{3}) at: {2, date, HH:mm:ss MM/dd/yyyy}";
-    
+    /**
+     * job执行成功
+     */
     private String jobSuccessMessage = "Job {1}.{0} execution complete at {2, date, HH:mm:ss MM/dd/yyyy} and reports: {8}";
 
+    /**
+     * job执行失败
+     */
     private String jobFailedMessage = "Job {1}.{0} execution failed at {2, date, HH:mm:ss MM/dd/yyyy} and reports: {8}";
 
+    /**
+     * job被取消
+     */
     private String jobWasVetoedMessage = "Job {1}.{0} was vetoed.  It was to be fired (by trigger {4}.{3}) at: {2, date, HH:mm:ss MM/dd/yyyy}";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -457,6 +468,7 @@ public class LoggingJobHistoryPlugin implements SchedulerPlugin, JobListener {
         
         Trigger trigger = context.getTrigger();
 
+        // 注释: 设置job被执行时的参数
         Object[] args = {
             context.getJobDetail().getKey().getName(),
             context.getJobDetail().getKey().getGroup(), new java.util.Date(),

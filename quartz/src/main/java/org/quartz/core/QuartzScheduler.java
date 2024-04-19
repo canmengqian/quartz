@@ -826,12 +826,12 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
      * <code>{@link org.quartz.JobDetail}</code> to the Scheduler, and
      * associate the given <code>{@link org.quartz.Trigger}</code> with it.
      * </p>
-     * 
+     *
      * <p>
      * If the given Trigger does not reference any <code>Job</code>, then it
      * will be set to reference the Job passed with it into this method.
      * </p>
-     * 
+     *
      * @throws SchedulerException
      *           if the Job or Trigger cannot be added to the Scheduler, or
      *           there is an internal Scheduler error.
@@ -855,17 +855,22 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
         if (jobDetail.getJobClass() == null) {
             throw new SchedulerException("Job's class cannot be null");
         }
-        // 转化为
+        // 转化为 TODO 为什么要向上转型
         OperableTrigger trig = (OperableTrigger)trigger;
 
         if (trigger.getJobKey() == null) {
+            // 使用JOB的KEY
             trig.setJobKey(jobDetail.getKey());
         } else if (!trigger.getJobKey().equals(jobDetail.getKey())) {
             throw new SchedulerException(
                 "Trigger does not reference given job!");
         }
         // 验证触发器合理性
-
+        /**
+         * 1. 抽象类验证了 属性不能为空
+         * 2， SimpleTriiger 验证重复次数和间隔
+         *
+         */
         trig.validate();
 
         Calendar cal = null;
@@ -917,12 +922,14 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
         Calendar cal = null;
         if (trigger.getCalendarName() != null) {
+            // 找回日历信息
             cal = resources.getJobStore().retrieveCalendar(trigger.getCalendarName());
             if(cal == null) {
                 throw new SchedulerException(
                     "Calendar not found: " + trigger.getCalendarName());
             }
         }
+        // 计算首次执行的时间
         Date ft = trig.computeFirstFireTime(cal);
 
         if (ft == null) {
@@ -932,7 +939,9 @@ public class QuartzScheduler implements RemotableQuartzScheduler {
 
         // 存储触发器
         resources.getJobStore().storeTrigger(trig, false);
+        // 通知调度线程下一次的调度时间
         notifySchedulerThread(trigger.getNextFireTime().getTime());
+        // 发出当前触发器已经被调度的通知了
         notifySchedulerListenersSchduled(trigger);
 
         return ft;

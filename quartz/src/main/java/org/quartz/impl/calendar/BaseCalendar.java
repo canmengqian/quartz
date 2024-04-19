@@ -236,6 +236,7 @@ public class BaseCalendar implements Calendar, Serializable, Cloneable {
      */
     protected java.util.Calendar getStartOfDayJavaCalendar(long timeInMillis) {
         java.util.Calendar startOfDay = createJavaCalendar(timeInMillis);
+        // 指定日期的0点
         startOfDay.set(java.util.Calendar.HOUR_OF_DAY, 0);
         startOfDay.set(java.util.Calendar.MINUTE, 0);
         startOfDay.set(java.util.Calendar.SECOND, 0);

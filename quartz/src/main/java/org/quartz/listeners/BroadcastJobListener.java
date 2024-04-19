@@ -24,6 +24,7 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 
 /**
+ * 桥接监听器,内部维护了监听器列表,并广播事件
  * Holds a List of references to JobListener instances and broadcasts all
  * events to them (in order).
  *
