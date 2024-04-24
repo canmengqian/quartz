@@ -1677,33 +1677,39 @@ public abstract class JobStoreSupport implements JobStore, Constants {
             String calName, Calendar calendar, boolean replaceExisting, boolean updateTriggers)
         throws JobPersistenceException {
         try {
+            // 检查日历是否存在，如果存在且不允许替换,则抛出异常
             boolean existingCal = calendarExists(conn, calName);
             if (existingCal && !replaceExisting) { 
                 throw new ObjectAlreadyExistsException(
                     "Calendar with name '" + calName + "' already exists."); 
             }
 
+            // 更新日历
             if (existingCal) {
                 if (getDelegate().updateCalendar(conn, calName, calendar) < 1) { 
                     throw new JobPersistenceException(
                         "Couldn't store calendar.  Update failed."); 
                 }
-                
+
+                // 更新与日历关联的触发器
                 if(updateTriggers) {
                     List<OperableTrigger> trigs = getDelegate().selectTriggersForCalendar(conn, calName);
                     
                     for(OperableTrigger trigger: trigs) {
+                        // 更新触发器日历,交由子类来实现,子类可能会计算下一次的调度时间
                         trigger.updateWithNewCalendar(calendar, getMisfireThreshold());
+                        // 触发器状态被重置为等待调度状态
                         storeTrigger(conn, trigger, null, true, STATE_WAITING, false, false);
                     }
                 }
             } else {
+                // 日历不存在则写入数据库
                 if (getDelegate().insertCalendar(conn, calName, calendar) < 1) { 
                     throw new JobPersistenceException(
                         "Couldn't store calendar.  Insert failed."); 
                 }
             }
-
+            // 非集群模式会把日历信息给缓存起来
             if (!isClustered) {
                 calendarCache.put(calName, calendar); // lazy-cache
             }
@@ -1762,15 +1768,23 @@ public abstract class JobStoreSupport implements JobStore, Constants {
     protected boolean removeCalendar(Connection conn, 
             String calName) throws JobPersistenceException {
         try {
+            // 日历信息与trrigger关联的话,无法删除日历
+            /*
+             * SELECT CALENDAR_NAME FROM TRIGGERS WHERE TRIGGER_NAME = ? AND
+             * TRIGGER_GROUP = ?
+             */
             if (getDelegate().calendarIsReferenced(conn, calName)) { 
                 throw new JobPersistenceException(
                     "Calender cannot be removed if it referenced by a trigger!"); 
             }
-
+            // 非集群模式把日历信息从缓存中移除
             if (!isClustered) {
                 calendarCache.remove(calName);
             }
-
+            // 删除日历
+            /**
+             * SQL: DELETE FROM CALENDARS WHERE SCHEDULER_NAME = ? AND  CALENDAR_NAME = ?
+             */
             return (getDelegate().deleteCalendar(conn, calName) > 0);
         } catch (SQLException e) {
             throw new JobPersistenceException("Couldn't remove calendar: "
@@ -1803,12 +1817,14 @@ public abstract class JobStoreSupport implements JobStore, Constants {
         throws JobPersistenceException {
         // all calendars are persistent, but we can lazy-cache them during run
         // time as long as we aren't running clustered.
+        // 集群模式下,所有日历信息都从数据库中读取,非集群模式下,所有日历信息都从数据库中读取
         Calendar cal = (isClustered) ? null : calendarCache.get(calName);
         if (cal != null) {
             return cal;
         }
 
         try {
+            // 从数据库中读取日历信息
             cal = getDelegate().selectCalendar(conn, calName);
             if (!isClustered) {
                 calendarCache.put(calName, cal); // lazy-cache...

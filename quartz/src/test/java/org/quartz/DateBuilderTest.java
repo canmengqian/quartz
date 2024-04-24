@@ -1,16 +1,16 @@
-/* 
+/*
  * All content copyright Terracotta, Inc., unless otherwise indicated. All rights reserved.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not 
- * use this file except in compliance with the License. You may obtain a copy 
- * of the License at 
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0 
- *   
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy
+ * of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
  * under the License.
  */
 package org.quartz;
@@ -29,23 +29,55 @@ import junit.framework.TestCase;
  * Unit test for JobDetail.
  */
 public class DateBuilderTest extends TestCase {
-    
+    public void test() {
+        // 2013-07-01 10:30:00, 按年月日时分秒进行构建
+        DateBuilder.dateOf(10, 30, 0, 1, 7, 2013);
+        // 验证天数有效性
+        DateBuilder.validateDayOfMonth(20);
+        DateBuilder.evenHourDate(new Date());
+        DateBuilder.evenHourDateAfterNow();
+        DateBuilder.evenSecondDate(new Date());
+        // 返回10天之后的日期
+        DateBuilder.futureDate(10, IntervalUnit.DAY);
+        DateBuilder.nextGivenMinuteDate(new Date(), 10);
+        DateBuilder.nextGivenSecondDate(new Date(), 10);
+        // 指定今天的时分秒
+        DateBuilder.todayAt(10, 30, 0);
+        // 指定明天的时分秒
+        DateBuilder.tomorrowAt(10, 30, 0);
+        // 验证星期有效性
+        DateBuilder.validateDayOfWeek(5);
+        // 验证小时有效性
+        DateBuilder.validateHour(20);
+        // 验证年份有效性
+        DateBuilder.validateYear(100);
+        // 构造器方式构建
+        DateBuilder.newDate()
+                .inYear(2024)
+                .inMonth(4)
+                .onDay(24)
+                .atHourMinuteAndSecond(10, 30, 0)
+                .build();
+        DateBuilder.newDateInLocale(Locale.CHINA);
+        DateBuilder.newDateInTimezone(TimeZone.getDefault());
+    }
+
     public void testBasicBuilding() {
-    	
-    	
-    	Date t = dateOf(10, 30, 0, 1, 7, 2013);  // july 1 10:30:00 am
-    	
-    	Calendar vc = Calendar.getInstance();
-    	vc.set(Calendar.YEAR, 2013);
-    	vc.set(Calendar.MONTH, Calendar.JULY);
-    	vc.set(Calendar.DAY_OF_MONTH, 1);
-    	vc.set(Calendar.HOUR_OF_DAY, 10);
-    	vc.set(Calendar.MINUTE, 30);
-    	vc.set(Calendar.SECOND, 0);
-    	vc.set(Calendar.MILLISECOND, 0);
-    	
-    	Date v = vc.getTime();
-    	
+
+
+        Date t = dateOf(10, 30, 0, 1, 7, 2013);  // july 1 10:30:00 am
+
+        Calendar vc = Calendar.getInstance();
+        vc.set(Calendar.YEAR, 2013);
+        vc.set(Calendar.MONTH, Calendar.JULY);
+        vc.set(Calendar.DAY_OF_MONTH, 1);
+        vc.set(Calendar.HOUR_OF_DAY, 10);
+        vc.set(Calendar.MINUTE, 30);
+        vc.set(Calendar.SECOND, 0);
+        vc.set(Calendar.MILLISECOND, 0);
+
+        Date v = vc.getTime();
+
         assertEquals("DateBuilder-produced date is not as expected.", t, v);
     }
 
@@ -205,7 +237,7 @@ public class DateBuilderTest extends TestCase {
         assertEquals("DateBuilder-produced date is not as expected.", rd.get(Calendar.DAY_OF_YEAR), vc.get(Calendar.DAY_OF_YEAR));
 
         rd.setTime(new Date());
-        rd.add(Calendar.MILLISECOND, (int)MILLISECONDS_IN_DAY); // increment the day (using this means on purpose - to test const)
+        rd.add(Calendar.MILLISECOND, (int) MILLISECONDS_IN_DAY); // increment the day (using this means on purpose - to test const)
         bd = tomorrowAt(10, 33, 12);
         vc.setTime(bd);
         assertEquals("DateBuilder-produced date is not as expected.", 10, vc.get(Calendar.HOUR_OF_DAY));
@@ -229,7 +261,7 @@ public class DateBuilderTest extends TestCase {
         vc.set(Calendar.SECOND, 12);
         vc.set(Calendar.MILLISECOND, 0);
 
-        vc.setTime( translateTime(vc.getTime(), tz1, tz2) );
+        vc.setTime(translateTime(vc.getTime(), tz1, tz2));
         assertEquals("DateBuilder-produced date is not as expected.", 12, vc.get(Calendar.HOUR_OF_DAY));
 
         vc = Calendar.getInstance(tz2);
@@ -241,7 +273,7 @@ public class DateBuilderTest extends TestCase {
         vc.set(Calendar.SECOND, 12);
         vc.set(Calendar.MILLISECOND, 0);
 
-        vc.setTime( translateTime(vc.getTime(), tz2, tz1) );
+        vc.setTime(translateTime(vc.getTime(), tz2, tz1));
         assertEquals("DateBuilder-produced date is not as expected.", 8, vc.get(Calendar.HOUR_OF_DAY));
     }
 

@@ -505,16 +505,25 @@ public interface StdJDBCConstants extends Constants {
             + TABLE_CALENDARS + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_CALENDAR_NAME + " = ?";
 
+    /*
+     * SELECT CALENDAR_NAME, CALENDAR FROM CALENDARS WHERE CALENDAR_NAME = ? AND SCHEDULER_NAME = ?
+     */
     String SELECT_CALENDAR = "SELECT *" + " FROM "
             + TABLE_PREFIX_SUBST + TABLE_CALENDARS + " WHERE "
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_CALENDAR_NAME + " = ?";
 
+    /*
+     * SELECT CALENDAR_NAME FROM TRIGGERS WHERE TRIGGER_NAME = ? AND
+     * TRIGGER_GROUP = ?
+     */
     String SELECT_REFERENCED_CALENDAR = "SELECT "
             + COL_CALENDAR_NAME + " FROM " + TABLE_PREFIX_SUBST
             + TABLE_TRIGGERS + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
             + " AND " + COL_CALENDAR_NAME + " = ?";
-
+    /**
+     * SQL: DELETE FROM CALENDARS WHERE SCHEDULER_NAME = ? AND  CALENDAR_NAME = ?
+     */
     String DELETE_CALENDAR = "DELETE FROM "
             + TABLE_PREFIX_SUBST + TABLE_CALENDARS + " WHERE "
             + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST
@@ -524,6 +533,9 @@ public interface StdJDBCConstants extends Constants {
             + COL_CALENDAR_NAME + ") " + " FROM " + TABLE_PREFIX_SUBST
             + TABLE_CALENDARS + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST;
 
+    /*
+     * SELECT CALENDAR_NAME FROM CALENDARS WHERE SCHEDULER_NAME = ?
+     */
     String SELECT_CALENDARS = "SELECT " + COL_CALENDAR_NAME
             + " FROM " + TABLE_PREFIX_SUBST + TABLE_CALENDARS
             + " WHERE " + COL_SCHEDULER_NAME + " = " + SCHED_NAME_SUBST;

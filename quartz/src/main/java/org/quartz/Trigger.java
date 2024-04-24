@@ -59,6 +59,7 @@ import java.util.Date;
 public interface Trigger extends Serializable, Cloneable, Comparable<Trigger> {
 
     public static final long serialVersionUID = -3904243490805975570L;
+    // 正常状态，暂停状态，完成状态，错误状态，阻塞状态
     
     public enum TriggerState { NONE, NORMAL, PAUSED, COMPLETE, ERROR, BLOCKED }
     

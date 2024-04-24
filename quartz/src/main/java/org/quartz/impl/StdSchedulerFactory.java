@@ -393,8 +393,10 @@ public class StdSchedulerFactory implements SchedulerFactory {
 
         // 获取配置文件
         String requestedFile = System.getProperty(PROPERTIES_FILE);
+        // 使用项目里resource下的配置文件
         String propFileName = requestedFile != null ? requestedFile
                 : "quartz.properties";
+        // 外部配置文件
         File propFile = new File(propFileName);
 
         Properties props = new Properties();
@@ -419,7 +421,8 @@ public class StdSchedulerFactory implements SchedulerFactory {
                             + propFileName + "' could not be read.", ioe);
                     throw initException;
                 }
-            } else if (requestedFile != null) {
+            }
+            else if (requestedFile != null) {
                 // 当前线程所属的资源
                 in =
                         Thread.currentThread().getContextClassLoader().getResourceAsStream(requestedFile);
@@ -441,7 +444,8 @@ public class StdSchedulerFactory implements SchedulerFactory {
                     throw initException;
                 }
 
-            } else {
+            }
+            else {
                 propSrc = "default resource file in Quartz package: 'quartz.properties'";
 
                 ClassLoader cl = getClass().getClassLoader();
@@ -484,7 +488,7 @@ public class StdSchedulerFactory implements SchedulerFactory {
                 } catch (IOException ignore) { /* ignore */ }
             }
         }
-        // 初始化解析器
+        // 初始化解析器,环境变量里有配置优先使用环境变量里的
         initialize(overrideWithSysProps(props, getLog()));
     }
 

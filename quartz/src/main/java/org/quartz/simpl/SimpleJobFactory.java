@@ -43,7 +43,7 @@ public class SimpleJobFactory implements JobFactory {
     }
     
     public Job newJob(TriggerFiredBundle bundle, Scheduler Scheduler) throws SchedulerException {
-
+        // 获取detail信息
         JobDetail jobDetail = bundle.getJobDetail();
         Class<? extends Job> jobClass = jobDetail.getJobClass();
         try {
@@ -52,7 +52,7 @@ public class SimpleJobFactory implements JobFactory {
                     "Producing instance of Job '" + jobDetail.getKey() + 
                     "', class=" + jobClass.getName());
             }
-            
+            // 直接实例化
             return jobClass.newInstance();
         } catch (Exception e) {
             SchedulerException se = new SchedulerException(

@@ -97,7 +97,7 @@ public class TriggerBuilder<T extends Trigger> {
     public T build() {
 
         if(scheduleBuilder == null)
-            // 创建一个默认的SimpleScheduleBuilder
+            // 创建一个默认的SimpleScheduleBuilder,基于时间间隔和次数
             scheduleBuilder = SimpleScheduleBuilder.simpleSchedule();
         // Build the trigger
         MutableTrigger trig = scheduleBuilder.build();
@@ -112,7 +112,7 @@ public class TriggerBuilder<T extends Trigger> {
         if(jobKey != null)
             trig.setJobKey(jobKey);
         trig.setPriority(priority);
-        
+        // 设置trigger对应的入参
         if(!jobDataMap.isEmpty())
             trig.setJobDataMap(jobDataMap);
         
@@ -133,6 +133,7 @@ public class TriggerBuilder<T extends Trigger> {
      * @see Trigger#getKey()
      */
     public TriggerBuilder<T> withIdentity(String name) {
+        // 不设置组
         key = new TriggerKey(name, null);
         return this;
     }  
@@ -274,6 +275,7 @@ public class TriggerBuilder<T extends Trigger> {
      */
     @SuppressWarnings("unchecked")
     public <SBT extends T> TriggerBuilder<SBT> withSchedule(ScheduleBuilder<SBT> schedBuilder) {
+       // 设置scheduler
         this.scheduleBuilder = schedBuilder;
         return (TriggerBuilder<SBT>) this;
     }
