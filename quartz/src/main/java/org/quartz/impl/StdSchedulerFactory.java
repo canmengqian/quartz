@@ -663,12 +663,13 @@ public class StdSchedulerFactory implements SchedulerFactory {
         String threadName = cfg.getStringProperty(PROP_SCHED_THREAD_NAME,
                 schedName + "_QuartzSchedulerThread");
 
+        // 有限按照环境变量设置,未配置就按默认值设置【NON_CLUSTERED】
         String schedInstId = cfg.getStringProperty(PROP_SCHED_INSTANCE_ID,
                 DEFAULT_INSTANCE_ID);
-
+        // 是否自动生成
         if (schedInstId.equals(AUTO_GENERATE_INSTANCE_ID)) {
             autoId = true;
-            // id生成类
+            // id生成类，默认按照SimpleInstanceIdGenerator 生成
             instanceIdGeneratorClass = cfg.getStringProperty(
                     PROP_SCHED_INSTANCE_ID_GENERATOR_CLASS,
                     "org.quartz.simpl.SimpleInstanceIdGenerator");

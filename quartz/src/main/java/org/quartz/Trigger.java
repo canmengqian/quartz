@@ -97,8 +97,15 @@ public interface Trigger extends Serializable, Cloneable, Comparable<Trigger> {
      * <p><code>SET_ALL_JOB_TRIGGERS_ERROR</code> Instructs the <code>{@link Scheduler}</code> that 
      * the <code>Trigger</code> should be put in the <code>ERROR</code> state.</p>
      */
-    public enum CompletedExecutionInstruction { NOOP, RE_EXECUTE_JOB, SET_TRIGGER_COMPLETE, DELETE_TRIGGER, 
-        SET_ALL_JOB_TRIGGERS_COMPLETE, SET_TRIGGER_ERROR, SET_ALL_JOB_TRIGGERS_ERROR }
+    public enum CompletedExecutionInstruction {
+        NOOP,// 不做任何事情
+        RE_EXECUTE_JOB,// 重新执行作业
+        SET_TRIGGER_COMPLETE, // 将触发器置于完成状态
+        DELETE_TRIGGER, // 删除触发器
+        SET_ALL_JOB_TRIGGERS_COMPLETE, // 将触发器置于完成状态
+        SET_TRIGGER_ERROR,// 将触发器置于错误状态
+        SET_ALL_JOB_TRIGGERS_ERROR // 将触发器置于错误状态
+    }
 
     /**
      * Instructs the <code>{@link Scheduler}</code> that upon a mis-fire

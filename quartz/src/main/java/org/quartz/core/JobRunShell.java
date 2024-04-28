@@ -177,6 +177,7 @@ public class JobRunShell extends SchedulerListenerSupport implements Runnable {
 
                 // notify job & trigger listeners...
                 try {
+                    // 通知trigger对应的job任务开始被触发了,但是job还没有运行execute方法
                     if (!notifyListenersBeginning(jec)) {
                         break;
                     }

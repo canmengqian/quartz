@@ -422,6 +422,7 @@ public class LoggingJobHistoryPlugin implements SchedulerPlugin, JobListener {
     public void initialize(String pname, Scheduler scheduler,ClassLoadHelper classLoadHelper)
         throws SchedulerException {
         this.name = pname;
+        // 如果配置了此插件,将会添加到当前调度器下监听器下的job级监听器列表下,并且应用于所有的job
         scheduler.getListenerManager().addJobListener(this, EverythingMatcher.allJobs());
     }
 

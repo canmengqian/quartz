@@ -370,6 +370,9 @@ public interface StdJDBCConstants extends Constants {
             + " AND " + COL_JOB_NAME + " = ? AND " + COL_JOB_GROUP
             + " = ?";
 
+    /**
+     * SQL:updaTE JOB_TRIGGERS SET TRIGGER_STATE = ? WHERE JOB_NAME = ? AND JOB_GROUP = ? AND TRIGGER_STATE = ?
+     */
     String UPDATE_JOB_TRIGGER_STATES_FROM_OTHER_STATE = "UPDATE "
             + TABLE_PREFIX_SUBST
             + TABLE_TRIGGERS

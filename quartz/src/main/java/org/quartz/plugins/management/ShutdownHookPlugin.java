@@ -133,7 +133,7 @@ public class ShutdownHookPlugin implements SchedulerPlugin {
                 }
             }
         };
-
+        // jvm退出时会执行钩子线程
         Runtime.getRuntime().addShutdownHook(t);
     }
 

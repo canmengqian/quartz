@@ -38,6 +38,7 @@ import java.util.List;
 public interface ListenerManager {
 
     /**
+     * 按everything匹配
      * Add the given <code>{@link JobListener}</code> to the <code>Scheduler</code>,
      * and register it to receive events for all Jobs.
      * 
@@ -49,6 +50,7 @@ public interface ListenerManager {
     public void addJobListener(JobListener jobListener);
 
     /**
+     * 按指定的匹配器进行匹配
      * Add the given <code>{@link JobListener}</code> to the <code>Scheduler</code>,
      * and register it to receive events for Jobs that are matched by the
      * given Matcher.
